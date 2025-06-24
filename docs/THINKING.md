@@ -29,3 +29,8 @@
 - Transactions will be processed OOB by a Worker to ensure concurrency issues are handled (two or more transactions at the same time)
 - Account Numbers & Sort Codes - Will keep this simple - use string-based accountNumber and sortCode values with fixed-length digit formats. A maximum of 5 retry attempts are made to avoid DB uniqueness violations, falling back to a 409 Conflict if generation fails. - Account Numbers in production - this would be managed by a dedicated issuance service with modulus validation, uniqueness, and auditability built-in.
 - Idempotency keys will be added for Transactions to demonstrate, will avoid Accounts/Users for now
+
+### Testing against original openapi.yaml spec
+- My thoughts and evolution of this has diverged somewhat, I was planning to do a simple comparison of yaml versus original yaml 
+  from the specification, but the improvements I've made to showcase breadth and depth of understanding have made this difficult
+  to compare like for like (authentication handlers, idempotency keys, changes in schema)
