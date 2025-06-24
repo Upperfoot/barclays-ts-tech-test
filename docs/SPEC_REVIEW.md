@@ -27,7 +27,8 @@ This document captures the discrepancies, edge cases, and areas of ambiguity ide
 
 ### 🏦 Bank Account Design
 
-- ❌ Accounts references accountNumber as the path field {accountNumber}, this should be a unique identifier as the same Account Number may be used across several sort-codes (12345678 / 10-10-10 != 12345678 / 20-20-20), we should use a unique identifier in it's place, returned in responses in POST, GET (ONE/MANY), PATCH 
+- ❌ Accounts references accountNumber as the path field {accountNumber}, this should be a unique identifier as the same Account Number may be used across several sort-codes (12345678 / 10-10-10 != 12345678 / 20-20-20), we should use a unique identifier in it's place, returned in responses in POST, GET (ONE/MANY), PATCH
+- ❌ Account Creation doesn't specify a Currency from the Enum (Why is accountType required, but not currency?)
 
 ---
 
