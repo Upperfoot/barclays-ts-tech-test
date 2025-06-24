@@ -31,15 +31,23 @@ While this is a take-home task, I’ve tried to keep things grounded in the way 
 
 ---
 
+## Architectural Notes
+
+- In line with CAP theory, this application treats monetary operations as strongly consistent, while accepting eventual consistency at the presentation layer. This mirrors the model used by real-world financial institutions, where performance and user experience are balanced with transactional integrity.
+- Account Display Balances may be eventually consistent, but Transactional Success/Failure modes must be strongly consistent 
+- Transactions will be handled via the [Transaction Outbox](https://microservices.io/patterns/data/transactional-outbox.html) pattern, and each Transactions has an Idempotency key attached to prevent duplicate requests - this requires a transaction ingress (API request handlers), and a transaction processor (transaction worker CLI)
+
 ## 🛠 Decisions Taken
 
 Some specific choices I made to help simplify or clarify the build:
 
 - Opted for **NestJS** over raw Express to get structure, DI, and Swagger support quickly.
 - Used **TypeScript** for safety and expressiveness — it’s also what I’ve been working with most recently.
-- Used **Docker + Compose** for local setup and portability, without introducing too much infra.
+- Could have set up **Docker + Compose** for local setup and portability, however I have kept this simple via my tech choices (e.g. SQLite)
 - JWT auth was handled via Passport strategy and guarded routes — roughly mirroring Spring Security flows.
 - I kept the code style close to idiomatic NestJS, using pipes, interceptors, and guards where appropriate.
+- As with any type of money handling, working with purely integers to prevent rounding errors and letting presentation layer handle the display format.
+- I will implement a simple Transactional Outbox system via a Command Line to split concerns of Transaction Intent from Transactional Outcome, this can be further iterated upon in future to be Event Driven through Message Queue's - this also prevents inline request transaction locking which is rarely a scaleable solution.
 
 ---
 
@@ -48,6 +56,7 @@ Some specific choices I made to help simplify or clarify the build:
 - Full e2e test coverage (out of scope, but could be added easily with `@nestjs/testing`)
 - Advanced DB constraints and rollback logic for transactions — just out of scope for now
 - Internationalisation (i18n), currency conversion, or multi-user roles (could be future layers)
+- Event-Driven systems/Asynchronous patterns (e.g. CDC, 2PC, Event Sourcing)
 
 ---
 

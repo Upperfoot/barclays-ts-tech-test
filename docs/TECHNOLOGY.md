@@ -58,4 +58,14 @@ Just for completeness:
 
 ---
 
+## 🧠 Database Selection: SQLite vs PostgreSQL vs MySQL vs SQL Server
+
+For the purposes of this take-home exercise, I’ve chosen **SQLite** as a lightweight, embedded SQL engine to simplify local development and onboarding.
+
+However, this choice comes with some trade-offs:
+
+- SQLite does **not support row-level locking** or `SKIP LOCKED` semantics.
+- As such, the architecture here assumes a **single worker instance** processes transactions.
+- This is acceptable in a constrained local or CI environment, but would not be viable at production scale.
+
 Let me know if you’d like me to walk through the modules or how certain parts were structured — happy to talk through anything in detail.
