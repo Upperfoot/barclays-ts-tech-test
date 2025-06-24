@@ -1,27 +1,21 @@
-### 📅 24/06/2025 – Initial Analysis & Gotchas
+### 📅 24/06/2025 – Project Log
 
-#### ✅ Decision: Stack Selection
-- Chose **NestJS with TypeScript** to align with my recent experience and give me a well-structured backend out of the box.
-- It mirrors Spring Boot conceptually, which fits Barclays’ environment and mindset well.
+#### ✅ Decision: Use SQLite
 
-#### ⚠️ Gotcha: No Auth Endpoint Specified
-- The OpenAPI spec includes no authentication routes or schema.
-- Yet the brief explicitly asks for a user to authenticate and use a JWT.
-- **Decision**: Implement a `POST /auth/login` endpoint and secure all routes (except user creation) with JWT + Bearer scheme.
-- Also decided to manually update the OpenAPI decorators to reflect the security model.
+- Chose SQLite as the database layer for this take-home due to its simplicity and zero-setup model.
+- No need to install or run a separate DB server or Docker — it runs entirely in-process, which is ideal for a reviewable project.
+- Transactions are fully supported, which is critical for withdrawal flows and enforcing account balance consistency.
+- The `.sqlite` file can be committed or generated at runtime using migrations, ensuring reproducibility.
+- However SQLite isn't designed for production systems that require horizontal scale or multi-process access.
 
-#### ⚠️ Gotcha: No Password Field in User Schema
-- The schema lacks `password`, yet authentication is expected.
-- **Decision**: Add a `password` field in the user DTO, hash it using `bcrypt`, and exclude it from any public-facing responses.
+#### ✅ Decision: Use TypeORM for ORM + Synchronise for ease of Development
 
-#### ⚠️ Gotcha: OpenAPI Spec Incomplete or Misaligned
-- Several response codes mentioned in the brief (e.g. `422 Unprocessable Entity`, `403 Forbidden`, `409 Conflict`) are not included in the OpenAPI spec.
-- **Decision**: Extend controller decorators to reflect all scenario-based status codes as per the PDF brief — not just what's in the spec file.
+- Chose TypeORM for data modelling due to:
+  - Native support in NestJS
+  - Familiar class-based decorators for entities
+  - Ability to generate and run SQL migrations from those definitions
+  - TypeORM also offers transactional query execution, which will be used for deposit/withdrawal logic.
+  - Used `synchronize: true` - However... this does not simulate how schema would be managed in a production codebase, controlled migrations are much better suited (e.g., Barclays context)
 
-#### ⚠️ Gotcha: No Mention of Uniqueness Constraints
-- No validation for email/username uniqueness in spec or models.
-- **Decision**: Enforce uniqueness at the service layer for now; in a real app, this would likely be DB-level with a unique index.
 
-#### ⚠️ Gotcha: Ownership Checks Are Implied, Not Explicit
-- All access control scenarios (e.g. "cannot fetch another user's account") rely on `userId`, but there’s no explanation of how the system links token claims to resource ownership.
-- **Decision**: Token will carry `userId` claim, which is used in a route guard to enforce resource ownership.
+
