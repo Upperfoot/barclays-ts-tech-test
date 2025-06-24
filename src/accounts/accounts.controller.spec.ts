@@ -1,10 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { AccountsModule } from './accounts.module';
 import { AccountType, Currency } from './account.entity';
 import { typeOrmConfig } from '../app.module';
+import { setupApp } from '../main';
 
 describe('AccountsController (Integration)', () => {
   let app: INestApplication;
@@ -18,7 +19,9 @@ describe('AccountsController (Integration)', () => {
     }).compile();
 
     app = module.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
+
+    setupApp(app);
+
     await app.init();
   });
 
