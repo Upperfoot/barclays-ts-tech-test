@@ -1,8 +1,8 @@
 // Controller to handle /accounts endpoints
 import { Controller, Post, Body, Get, Param } from '@nestjs/common';
 import { CreateAccountHandler, CreateAccountRequest, AccountResponse } from './handlers/create.account.handler';
-import { GetAccountHandler } from './handlers/get.account.handler';
-import { ApiBody, ApiOperation, ApiResponse, ApiSecurity } from '@nestjs/swagger';
+import { ListAccountHandler, ListAccountResponse } from './handlers/list.account.handler';
+import { ApiOperation, ApiResponse, ApiSecurity } from '@nestjs/swagger';
 import { ApiDefaultResponses } from 'src/default-responses.decorator';
 
 @ApiDefaultResponses()
@@ -11,7 +11,7 @@ import { ApiDefaultResponses } from 'src/default-responses.decorator';
 export class AccountsController {
   constructor(
     private readonly createAccountHandler: CreateAccountHandler,
-    private readonly getAccountHandler: GetAccountHandler
+    private readonly getAccountHandler: ListAccountHandler
   ) {}
 
   @Post()
@@ -28,8 +28,8 @@ export class AccountsController {
 
   @Get()
   @ApiOperation({ summary: 'Fetch all accounts for a given user' })
-  @ApiResponse({ status: 200, description: 'List of accounts', type: [AccountResponse] })
-  async getAccounts(@Param('userId') userId: string): Promise<AccountResponse[]> {
+  @ApiResponse({ status: 200, description: 'List of accounts', type: [ListAccountResponse] })
+  async getAccounts(@Param('userId') userId: string): Promise<ListAccountResponse> {
     return this.getAccountHandler.handle({ userId });
   }
 }
