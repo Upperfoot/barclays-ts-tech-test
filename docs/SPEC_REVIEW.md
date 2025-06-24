@@ -27,19 +27,15 @@ This document captures the discrepancies, edge cases, and areas of ambiguity ide
 
 ### 🏦 Bank Account Design
 
-- ❌ No enforcement of ownership rules in spec — all tied to business logic only.
-- ❌ No mention of sort code or account number (if this is simulating a "real" bank).
-- ❌ No account types (e.g., current, savings).
+- ❌ Accounts references accountNumber as the path field {accountNumber}, this should be a unique identifier as the same Account Number may be used across several sort-codes (12345678 / 10-10-10 != 12345678 / 20-20-20), we should use a unique identifier in it's place, returned in responses in POST, GET (ONE/MANY), PATCH 
 
 ---
 
 ### 💸 Transaction Model Issues
 
-- ❌ No `createdAt` timestamp on transaction object.
-- ❌ No balance snapshot or memo field — hurts auditability.
-- ❌ No currency — assumed to be one fixed unit.
-- ❌ Withdrawals don't validate against available balance in schema.
-- ✅ Transactions are immutable as expected (PDF clarifies they cannot be modified/deleted).
+- ❌ Transactions may fail in banking systems as they are processed OOB, usually with a Transaction Outbox
+- ✅ Transactions are immutable from a user perspective as expected (PDF clarifies they cannot be modified/deleted), however for the purposes above, it is valid and in fact correct to hold and modify a transaction STATUS
+- ❌ Transactions don't define a format of their ID - will assume a UUID format (e.g. crypto.randomUuid())
 
 ---
 
@@ -52,11 +48,6 @@ This document captures the discrepancies, edge cases, and areas of ambiguity ide
 
 ### 🧪 Error Handling
 
-- ❌ Spec omits key HTTP status codes required in the brief:
-  - `403 Forbidden`
-  - `409 Conflict` (e.g., cannot delete user with active account)
-  - `422 Unprocessable Entity` (e.g., insufficient funds)
-- ❌ No reusable `ErrorResponse` schema to enforce standard error structure.
 - ✅ Some 404 cases included but not consistently across all paths.
 
 ---
@@ -71,16 +62,11 @@ This document captures the discrepancies, edge cases, and areas of ambiguity ide
 ### 📄 Documentation Gaps
 
 - ❌ Endpoint descriptions are mostly missing.
-- ❌ No response examples — hurts API consumer experience.
-- ❌ Missing tags for grouping endpoints.
-- ❌ No `operationId`s for client generation.
 
 ---
 
 ### 🚨 Miscellaneous Omissions
 
-- ❌ No account balance endpoint — must infer from transaction history.
-- ❌ No audit or activity log endpoints (could be expected in a banking API).
 - ❌ No pagination, filtering or sorting hints on list endpoints (e.g., transactions).
 - ❌ No multi-user roles (e.g., admin vs end-user) — not required here, but unmentioned.
 
