@@ -14,8 +14,17 @@ class BadRequestErrorResponse {
   @ApiProperty({ example: 'Bad Request' })
   error: string;
 
-  @ApiProperty({ example: ['property blahBlah should not exist', 'property accountType should be one of these values [GBP] '] })
+  @ApiProperty({ example: 'Validation failed' })
   message: string[];
+
+  @ApiProperty({ example: [
+    {
+      field: "name",
+      message: "name must be a string",
+      type: "ValidationError"
+    }
+  ]})
+  details: { field: string; message: string, type: string }
 }
 
 class UnauthorisedErrorResponse {
