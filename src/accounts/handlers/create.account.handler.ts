@@ -1,7 +1,7 @@
-import { Injectable } from "@nestjs/common";
+import { ConflictException, Injectable } from "@nestjs/common";
 import { AccountEntity, AccountType, Currency } from "../account.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { QueryFailedError, Repository } from "typeorm";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEnum, IsString } from "class-validator";
 
@@ -107,6 +107,56 @@ export class CreateAccountHandler {
      * verification to verify the pair (Vocalink, MOD11, MOD11-2, or MOD97)
      */
     async handle(request: AuthenticatedDataRequest<CreateAccountRequest>): Promise<AccountResponse> {
+        for (let attempt = 0; attempt < 5; attempt++) {
+            const accountNumber = randomDigitString(8);
+            const sortCode = randomDigitString(6);
 
+            const entity = this.repo.create({
+                userId: request.userId,
+                accountNumber,
+                sortCode,
+                name: request.data.name,
+                accountType: request.data.accountType,
+                balance: 0,
+                currency: request.data.currency,
+            });
+
+            try {
+                const saved = await this.repo.save(entity);
+                return {
+                    id: saved.uuid,
+                    userId: saved.userId,
+                    accountNumber: saved.accountNumber,
+                    sortCode: saved.sortCode,
+                    name: saved.name,
+                    accountType: saved.accountType,
+                    balance: saved.balance,
+                    currency: saved.currency,
+                    createdTimestamp: saved.createdTimestamp,
+                    updatedTimestamp: saved.updatedTimestamp,
+                };
+            } catch (err) {
+                const isAccountNameUniqueViolation =
+                    err instanceof QueryFailedError &&
+                    /UNIQUE constraint failed: accounts.userId, accounts.name/.test((err as any).message);
+
+                if (isAccountNameUniqueViolation) {
+                    throw new ConflictException('Name must be unique');
+                }
+
+                const isAccountNumberUniqueViolation =
+                    err instanceof QueryFailedError &&
+                    /UNIQUE constraint failed: accounts.accountNumber, accounts.sortCode/.test((err as any).message);
+
+                if (!isAccountNumberUniqueViolation) throw err; // rethrow other DB errors
+
+                if (attempt === 4) {
+                    throw new ConflictException('Unable to generate unique account number');
+                }
+                // else: retry
+            }
+        }
+
+        throw new ConflictException('Unexpected error'); // shouldn't reach here
     }
 }
