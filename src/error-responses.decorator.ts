@@ -7,6 +7,17 @@ export interface ErrorResponse {
   message: string[] | string;
 }
 
+export class ValidationDetail {
+  @ApiProperty()
+  field: string;
+
+  @ApiProperty()
+  message: string;
+
+  @ApiProperty()
+  type: string;
+}
+
 export class BadRequestErrorResponse {
   @ApiProperty({ example: 400 })
   statusCode: number;
@@ -23,8 +34,8 @@ export class BadRequestErrorResponse {
       message: "name must be a string",
       type: "ValidationError"
     }
-  ]})
-  details: { field: string; message: string, type: string }
+  ], type: [ValidationDetail] })
+  details: ValidationDetail[]
 }
 
 class UnauthorisedErrorResponse {
