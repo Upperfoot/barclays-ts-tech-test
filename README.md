@@ -38,6 +38,8 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
+[Swagger Playground + Documentation](http://localhost:3000/api)
+
 ## Run tests
 
 ```bash

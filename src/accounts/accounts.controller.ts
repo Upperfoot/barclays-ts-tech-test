@@ -2,8 +2,8 @@
 import { Controller, Post, Body, Get, Param } from '@nestjs/common';
 import { CreateAccountHandler, CreateAccountRequest, AccountResponse } from './handlers/create.account.handler';
 import { ListAccountHandler, ListAccountResponse } from './handlers/list.account.handler';
-import { ApiOperation, ApiResponse, ApiSecurity } from '@nestjs/swagger';
-import { ApiDefaultResponses } from 'src/default-responses.decorator';
+import { ApiBadRequestResponse, ApiConflictResponse, ApiCreatedResponse, ApiOperation, ApiResponse, ApiSecurity } from '@nestjs/swagger';
+import { ApiDefaultResponses, BadRequestErrorResponse, ConflictErrorResponse } from 'src/error-responses.decorator';
 
 @ApiDefaultResponses()
 @ApiSecurity('bearerAuth')
@@ -16,8 +16,9 @@ export class AccountsController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new bank account for the authenticated user' })
-  @ApiResponse({ status: 201, description: 'Bank Account has been created successfully', type: AccountResponse })
-  @ApiResponse({ status: 409, description: 'Account with generated details already exists' })
+  @ApiCreatedResponse({ description: 'Bank Account has been created successfully', type: AccountResponse })
+  @ApiConflictResponse({ description: 'Account with generated details already exists', type: ConflictErrorResponse })
+  @ApiBadRequestResponse({ description: 'Invalid details supplied', type: BadRequestErrorResponse })
   async createAccount(@Body() body: CreateAccountRequest): Promise<AccountResponse> {
     return this.createAccountHandler.handle({
       userId: '',
@@ -29,7 +30,7 @@ export class AccountsController {
   @Get()
   @ApiOperation({ summary: 'Fetch all accounts for a given user' })
   @ApiResponse({ status: 200, description: 'List of accounts', type: [ListAccountResponse] })
-  async getAccounts(@Param('userId') userId: string): Promise<ListAccountResponse> {
+  async getAccounts(userId: string = ''): Promise<ListAccountResponse> {
     return this.getAccountHandler.handle({ userId });
   }
 }

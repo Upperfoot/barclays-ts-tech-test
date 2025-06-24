@@ -1,4 +1,4 @@
-### 📅 24/06/2025 – Project Log
+### 📅 24/06/2025 – Project Log (Initial Setup + Accounts Creation + Listings)
 
 #### Use SQLite
 
@@ -34,3 +34,11 @@
 - My thoughts and evolution of this has diverged somewhat, I was planning to do a simple comparison of yaml versus original yaml 
   from the specification, but the improvements I've made to showcase breadth and depth of understanding have made this difficult
   to compare like for like (authentication handlers, idempotency keys, changes in schema)
+
+## Wrap Up
+
+So successfully created the start of the project, hooked up our data layer (SQLite), Swagger Documentation start, Class Validation & Transformation, and also managed to get an Integration Test together of our Account creation and listing (without authentication for now) - tomorrow's focus is going to be on authentication with Passport & JWT tokens, storing our userId (uuid) as the sub (subject)
+
+Also added a little video demo of my progress thus far
+
+### 📅 25/06/2025 – Project Log - Authentication + Authorisation
