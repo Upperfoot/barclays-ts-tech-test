@@ -3,7 +3,7 @@ import { Controller, Post, Body, Get, Param } from '@nestjs/common';
 import { CreateAccountHandler, CreateAccountRequest, AccountResponse } from './handlers/create.account.handler';
 import { ListAccountHandler, ListAccountResponse } from './handlers/list.account.handler';
 import { ApiBadRequestResponse, ApiConflictResponse, ApiCreatedResponse, ApiOperation, ApiResponse, ApiSecurity } from '@nestjs/swagger';
-import { ApiDefaultResponses, BadRequestErrorResponse, ConflictErrorResponse } from 'src/error-responses.decorator';
+import { ApiDefaultResponses, BadRequestErrorResponse, ConflictErrorResponse } from '../error-responses.decorator';
 
 @ApiDefaultResponses()
 @ApiSecurity('bearerAuth')

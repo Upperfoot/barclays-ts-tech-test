@@ -5,7 +5,7 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { AccountsModule } from './accounts.module';
 import { AccountType, Currency } from './account.entity';
 import { typeOrmConfig } from '../app.module';
-import { setupApp } from '../main';
+import { setupApp } from '../common/app.setup';
 
 describe('AccountsController (Integration)', () => {
   let app: INestApplication;
@@ -23,6 +23,10 @@ describe('AccountsController (Integration)', () => {
     setupApp(app);
 
     await app.init();
+  });
+
+  afterAll(async () => {
+    await app.close();
   });
 
   it('creates and retrieves an account', async () => {

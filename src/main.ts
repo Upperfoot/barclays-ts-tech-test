@@ -1,19 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ValidationFilter } from './common/validation.filter';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-
-export function setupApp(app: INestApplication<any>) {
-    app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true, // important for class-transformer + Swagger
-    }),
-  );
-  app.useGlobalFilters(new ValidationFilter());
-}
+import { setupApp } from './common/app.setup';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -37,4 +25,5 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT ?? 3000);
 }
+
 bootstrap();
