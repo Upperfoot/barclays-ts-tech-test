@@ -2,27 +2,41 @@ import { ConflictException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { QueryFailedError, Repository } from "typeorm";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEmail, IsPhoneNumber, IsString, IsStrongPassword } from "class-validator";
+import { IsEmail, IsNotEmpty, IsObject, IsOptional, IsPhoneNumber, IsString, IsStrongPassword, ValidateNested } from "class-validator";
 import { AddressEntity, UserEntity } from "../user.entity";
 import { RequestHandler } from "../../common/interfaces";
+import * as bcrypt from "bcrypt";
+import { Type } from "class-transformer";
 
 export class Address implements AddressEntity {
     @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
     line1: string;
 
     @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
     line2: string;
 
     @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
     line3: string;
 
     @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
     town: string;
 
     @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
     county: string;
 
     @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
     postcode: string;
 }
 
@@ -53,6 +67,9 @@ export class CreateUserRequest {
     password: string;
 
     @ApiProperty()
+    @IsObject()
+    @Type(() => Address)
+    @ValidateNested({ each: true })
     address: Address;
 }
 
@@ -100,6 +117,7 @@ export class CreateUserHandler implements RequestHandler {
             email: request.email,
             phoneNumber: request.phoneNumber,
             address: request.address,
+            password: await bcrypt.hash(request.password, 10)
         });
 
         try {

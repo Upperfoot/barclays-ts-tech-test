@@ -47,3 +47,7 @@ Also added a little video demo of my progress thus far
 - Added Users & User Entities
 - Requires updating our existing E2E tests to include authorisation, will add helpers
 - Not focusing on Unit Tests yet for Internal Logic, will continue focusing on large impact tests (E2E)
+
+## User Endpoints
+
+- As spoke about before will derive the userId from the JWT token in the payload, no need to pass this about
