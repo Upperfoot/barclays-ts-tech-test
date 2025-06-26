@@ -30,8 +30,6 @@ describe('AccountsController (Integration)', () => {
   });
 
   it('creates and retrieves an account', async () => {
-    const userId = 'test-user-123';
-
     // Simulate a user creating an account (injected userId manually for now)
     const createRes = await request(app.getHttpServer())
       .post('/accounts')
@@ -47,12 +45,14 @@ describe('AccountsController (Integration)', () => {
     expect(createRes.body.accountType).toBe(AccountType.personal);
 
     // Retrieve accounts for user
-    const getRes = await request(app.getHttpServer())
+    const res = await request(app.getHttpServer())
       .get(`/accounts`)
       .expect(200);
 
-    expect(getRes.body.length).toBe(1);
-    expect(getRes.body[0].name).toBe('My Test Account');
+    expect(res.body).toHaveProperty('accounts');
+
+    expect(res.body.accounts.length).toBe(1);
+    expect(res.body.accounts[0].name).toBe('My Test Account');
   });
 
   it('rejects unknown fields in payload', async () => {
