@@ -4,6 +4,7 @@ import { AddressEntity, UserEntity } from "../users/user.entity";
 import { Repository } from "typeorm";
 import * as bcrypt from 'bcrypt';
 import { AuthService } from "../auth/auth.service";
+import { AccountEntity } from "../accounts/account.entity";
 
 export async function createTestUser(module: TestingModule): Promise<UserEntity> {
     const userRepo = module.get(getRepositoryToken(UserEntity)) as Repository<UserEntity>;
@@ -23,6 +24,20 @@ export async function createTestUser(module: TestingModule): Promise<UserEntity>
         password: await bcrypt.hash('Password123!', 10),
     });
 }
+
+export async function clearTables(module: TestingModule) {
+    const userRepo = module.get(getRepositoryToken(UserEntity)) as Repository<UserEntity>;
+    
+    if(userRepo) {
+        userRepo.deleteAll();
+    }
+    
+    const accountsRepo = module.get(getRepositoryToken(AccountEntity)) as Repository<AccountEntity>;
+    
+    if(accountsRepo) {
+        accountsRepo.deleteAll();
+    }
+} 
 
 export async function createUserTokens(module: TestingModule, user: UserEntity) {
     const authService = module.get(AuthService) as AuthService;
