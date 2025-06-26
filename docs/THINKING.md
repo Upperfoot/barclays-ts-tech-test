@@ -41,7 +41,7 @@ So successfully created the start of the project, hooked up our data layer (SQLi
 
 Also added a little video demo of my progress thus far
 
-### 📅 25/06/2025 – Project Log - Authentication + Authorisation
+### 📅 25/06/2025 - 26/06/2025 – Project Log - Authentication + Authorisation
 
 - Integrated JWT Passport, adding our JWT Strategy and AuthServices
 - Added Users & User Entities
@@ -52,3 +52,7 @@ Also added a little video demo of my progress thus far
 
 - As spoke about before will derive the userId from the JWT token in the payload, no need to pass this about, will change this from /users/{userId} to /users/me instead
 - Currently our JWT Authentication is Stateless, so if we delete our User we should check to see if that User does indeed still exist, we could check in each Handler (not exactly DRY), or we could instead check in our JWT Strategy / Guard - I'll do that instead - common practice is to return a 403 Forbidden Error as we have a well formed token, but the User no longer exists
+
+## Transactions 
+
+Now that we have our Authentication, User Endpoints & Account Endpoints. Let's move forward to our Transactions, starting off with our tests of creating a Transaction
