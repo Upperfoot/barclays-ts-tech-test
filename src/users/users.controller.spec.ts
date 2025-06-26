@@ -121,4 +121,52 @@ describe('UsersController (Integration)', () => {
     expect(res.body.address.county).toBe('Random County');
     expect(res.body.address.postcode).toBe('R1 3RR');
   });
+
+  it('delete user from table', async () => {
+    const testUser = await createTestUser(module);
+    const testUserTokens = await createUserTokens(module, testUser);
+    const accessToken = testUserTokens.accessToken;
+
+    const res = await request(app.getHttpServer())
+      .delete('/users/me')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(204);
+  });
+
+  it('patches user with specific data', async () => {
+    // Simulate a user creating an account
+    const testUser = await createTestUser(module);
+    const testUserTokens = await createUserTokens(module, testUser);
+    const accessToken = testUserTokens.accessToken;
+
+    // Simulate a user creating an account
+    const patchRes = await request(app.getHttpServer())
+      .patch('/users')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({
+        name: "Joe Bloggs",
+        phoneNumber: "+447987654321",
+        address: {
+          line1: "New Road",
+          line2: "New Place",
+          line3: "New Other Place",
+          town: "Other Town",
+          county: "Other County",
+          postcode: "OT1 1OT"
+        }
+      })
+      .expect(200);
+
+    expect(patchRes.body).toHaveProperty('email');
+    expect(patchRes.body.name).toBe('Joe Bloggs');
+    expect(patchRes.body.email).toBe('test@example.com'); // Should not be changed
+    expect(patchRes.body.phoneNumber).toBe('+447987654321');
+    expect(patchRes.body).toHaveProperty('address');
+    expect(patchRes.body.address.line1).toBe('New Road');
+    expect(patchRes.body.address.line2).toBe('New Place');
+    expect(patchRes.body.address.line3).toBe('New Other Place');
+    expect(patchRes.body.address.town).toBe('Other Town');
+    expect(patchRes.body.address.county).toBe('Other County');
+    expect(patchRes.body.address.postcode).toBe('OT1 1OT');
+  });
 });
