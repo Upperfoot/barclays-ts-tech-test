@@ -21,7 +21,7 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
     AccountsModule,
     UsersModule,
     AuthModule,
-    // TransactionsModule,
+    TransactionsModule,
   ],
 })
 export class AppModule {}
