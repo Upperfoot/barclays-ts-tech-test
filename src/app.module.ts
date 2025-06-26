@@ -5,6 +5,7 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { AccountsModule } from './accounts/accounts.module';
 import { UsersModule } from './users/users.module';
 import { TransactionsModule } from './transactions/transactions.module';
+import { AuthModule } from './auth/auth.module';
 
 export const typeOrmConfig: TypeOrmModuleOptions = {
   type: 'sqlite',
@@ -18,7 +19,8 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
   imports: [
     TypeOrmModule.forRoot(typeOrmConfig),
     AccountsModule,
-    // UsersModule,
+    UsersModule,
+    AuthModule,
     // TransactionsModule,
   ],
 })

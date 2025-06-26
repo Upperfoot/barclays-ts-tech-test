@@ -45,3 +45,5 @@ Also added a little video demo of my progress thus far
 
 - Integrated JWT Passport, adding our JWT Strategy and AuthServices
 - Added Users & User Entities
+- Requires updating our existing E2E tests to include authorisation, will add helpers
+- Not focusing on Unit Tests yet for Internal Logic, will continue focusing on large impact tests (E2E)

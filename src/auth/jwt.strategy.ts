@@ -1,11 +1,14 @@
 
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
+import { JwtUser } from '../common/current-user.decorator';
+
+const jwtSecret = crypto.randomUUID();
 
 export function getJwtConfiguration() {
     return {
-        secret: crypto.randomUUID()
+        secret: jwtSecret
     }
 }
 
@@ -19,7 +22,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: any) {
-    return { userId: payload.sub, username: payload.username };
+  async validate(payload: any): Promise<JwtUser> {
+    return { id: payload.sub, email: payload.email };
   }
 }

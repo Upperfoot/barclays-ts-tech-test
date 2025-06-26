@@ -2,12 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AuthModule } from './auth.module'; // assuming this bundles controller + service
-import { getRepositoryToken, TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { Address, UserEntity } from '../users/user.entity';
-import * as bcrypt from 'bcrypt';
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { UserEntity } from '../users/user.entity';
 import { typeOrmConfig } from '../app.module';
 import { setupApp } from '../common/app.setup';
-import { Repository } from 'typeorm';
+import { createTestUser } from '../common/auth-test-helper';
 
 describe('AuthController (e2e)', () => {
     let app: INestApplication;
@@ -25,24 +24,9 @@ describe('AuthController (e2e)', () => {
 
         setupApp(app);
 
+        await createTestUser(module);
+
         await app.init();
-
-        const userRepo = module.get(getRepositoryToken(UserEntity)) as Repository<UserEntity>;
-
-        await userRepo.save({
-            email: 'test@example.com',
-            name: 'test',
-            phoneNumber: '+447906924825',
-            address: {
-                line1: '58 Random Road',
-                line2: 'Random Place',
-                line3: 'Really Random Place',
-                town: 'Random City',
-                county: 'Random County',
-                postcode: 'R1 3RR'
-            } as Address,
-            password: await bcrypt.hash('Password123!', 10),
-        });
     });
 
     afterAll(async () => {
