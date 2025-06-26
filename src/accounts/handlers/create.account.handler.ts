@@ -4,9 +4,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { QueryFailedError, Repository } from "typeorm";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEnum, IsString } from "class-validator";
-
-export type AuthenticatedRequest = { userId: string }
-export type AuthenticatedDataRequest<T = unknown> = AuthenticatedRequest & { data: T };
+import { RequestHandler } from '../../common/interfaces';
 
 export class CreateAccountRequest {
     @ApiProperty({
@@ -30,6 +28,9 @@ export class CreateAccountRequest {
     @IsEnum(Currency)
     currency: Currency;
 }
+
+export type AuthenticatedRequest = { userId: string }
+export type AuthenticatedCreateRequest = AuthenticatedRequest & { data: CreateAccountRequest };
 
 export class AccountResponse {
     @ApiProperty({
@@ -87,8 +88,23 @@ function randomDigitString(length: number): string {
     return result;
 }
 
+export function mapAccountEntity(accountEntity: AccountEntity): AccountResponse {
+    return {
+        id: accountEntity.uuid,
+        userId: accountEntity.userId,
+        accountNumber: accountEntity.accountNumber,
+        sortCode: accountEntity.sortCode,
+        name: accountEntity.name,
+        accountType: accountEntity.accountType,
+        balance: accountEntity.balance,
+        currency: accountEntity.currency,
+        createdTimestamp: accountEntity.createdTimestamp,
+        updatedTimestamp: accountEntity.updatedTimestamp
+    };
+}
+
 @Injectable()
-export class CreateAccountHandler {
+export class CreateAccountHandler implements RequestHandler {
     constructor(
         @InjectRepository(AccountEntity)
         private readonly repo: Repository<AccountEntity>
@@ -106,7 +122,7 @@ export class CreateAccountHandler {
      * What we should do in future: Look at creating a deterministic bank account + sort code issuer with modulus
      * verification to verify the pair (Vocalink, MOD11, MOD11-2, or MOD97)
      */
-    async handle(request: AuthenticatedDataRequest<CreateAccountRequest>): Promise<AccountResponse> {
+    async handle(request: AuthenticatedCreateRequest): Promise<AccountResponse> {
         for (let attempt = 0; attempt < 5; attempt++) {
             const accountNumber = randomDigitString(8);
             const sortCode = randomDigitString(6);
@@ -122,19 +138,8 @@ export class CreateAccountHandler {
             });
 
             try {
-                const saved = await this.repo.save(entity);
-                return {
-                    id: saved.uuid,
-                    userId: saved.userId,
-                    accountNumber: saved.accountNumber,
-                    sortCode: saved.sortCode,
-                    name: saved.name,
-                    accountType: saved.accountType,
-                    balance: saved.balance,
-                    currency: saved.currency,
-                    createdTimestamp: saved.createdTimestamp,
-                    updatedTimestamp: saved.updatedTimestamp,
-                };
+                const savedAccount = await this.repo.save(entity);
+                return mapAccountEntity(savedAccount);
             } catch (err) {
                 const isAccountNameUniqueViolation =
                     err instanceof QueryFailedError &&

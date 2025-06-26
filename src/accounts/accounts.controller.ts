@@ -1,11 +1,13 @@
 // Controller to handle /accounts endpoints
-import { Controller, Post, Body, Get, UseGuards, Delete, Patch } from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards, Delete, Patch, HttpCode, Param } from '@nestjs/common';
 import { CreateAccountHandler, CreateAccountRequest, AccountResponse } from './handlers/create.account.handler';
 import { ListAccountHandler, ListAccountResponse } from './handlers/list.account.handler';
 import { ApiBadRequestResponse, ApiConflictResponse, ApiCreatedResponse, ApiOperation, ApiResponse, ApiSecurity } from '@nestjs/swagger';
 import { ApiDefaultResponses, BadRequestErrorResponse, ConflictErrorResponse } from '../common/error-responses.decorator';
 import { JwtGuard } from '../auth/jwt.guard';
 import { CurrentUser, JwtUser } from '../common/current-user.decorator';
+import { DeleteAccountHandler } from './handlers/delete.account.handler';
+import { PatchAccountHandler, PatchAccountRequest } from './handlers/patch.account.handler';
 
 @ApiDefaultResponses()
 @ApiSecurity('bearerAuth')
@@ -14,7 +16,9 @@ import { CurrentUser, JwtUser } from '../common/current-user.decorator';
 export class AccountsController {
   constructor(
     private readonly createAccountHandler: CreateAccountHandler,
-    private readonly listAccountHandler: ListAccountHandler
+    private readonly listAccountHandler: ListAccountHandler,
+    private readonly patchAccountHandler: PatchAccountHandler,
+    private readonly deleteAccountHandler: DeleteAccountHandler
   ) { }
 
   @Post()
@@ -37,5 +41,27 @@ export class AccountsController {
   @ApiResponse({ status: 200, description: 'List of accounts', type: [ListAccountResponse] })
   async listAccounts(@CurrentUser() user: JwtUser): Promise<ListAccountResponse> {
     return this.listAccountHandler.handle({ userId: user.id });
+  }
+
+  @Patch(':accountId')
+  @ApiOperation({ summary: 'Patch an account with new details' })
+  @ApiResponse({ status: 200, description: 'Update an account', type: [ListAccountResponse] })
+  async patchAccount(
+    @CurrentUser() user: JwtUser,
+    @Param('accountId') accountId: string,
+    @Body() body: PatchAccountRequest
+  ): Promise<AccountResponse> {
+    return this.patchAccountHandler.handle({ userId: user.id, accountId, data: body });
+  }
+
+  @Delete(':accountId')
+  @ApiOperation({ summary: 'Delete an account' })
+  @ApiResponse({ status: 200, description: 'Delete an account', type: [ListAccountResponse] })
+  @HttpCode(204)
+  async deleteAccount(
+    @CurrentUser() user: JwtUser,
+    @Param('accountId') accountId: string,
+  ) {
+    await this.deleteAccountHandler.handle({ userId: user.id, accountId });
   }
 }
