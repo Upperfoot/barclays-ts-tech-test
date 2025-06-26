@@ -10,75 +10,86 @@ import { setupApp } from '../common/app.setup';
 import { Repository } from 'typeorm';
 
 describe('AuthController (e2e)', () => {
-  let app: INestApplication;
+    let app: INestApplication;
 
-  beforeAll(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-        imports: [
-        TypeOrmModule.forRoot({ ...typeOrmConfig, database: ':memory:', dropSchema: true } as TypeOrmModuleOptions),
-        TypeOrmModule.forFeature([UserEntity]),
-        AuthModule,
-        ],
-    }).compile();
+    beforeAll(async () => {
+        const module: TestingModule = await Test.createTestingModule({
+            imports: [
+                TypeOrmModule.forRoot({ ...typeOrmConfig, database: ':memory:', dropSchema: true } as TypeOrmModuleOptions),
+                TypeOrmModule.forFeature([UserEntity]),
+                AuthModule,
+            ],
+        }).compile();
 
-    app = module.createNestApplication();
+        app = module.createNestApplication();
 
-    setupApp(app);
-    
-    await app.init();
-    
-    const userRepo = module.get(getRepositoryToken(UserEntity)) as Repository<UserEntity>;
+        setupApp(app);
 
-    await userRepo.save({
-      email: 'test@example.com',
-      name: 'test',
-      phoneNumber: '+447906924825',
-      address: {
-        line1: '58 Random Road',
-        line2: 'Random Place',
-        line3: 'Really Random Place',
-        town: 'Random City',
-        county: 'Random County',
-        postcode: 'R1 3RR'
-      } as Address,
-      password: await bcrypt.hash('password123', 10),
+        await app.init();
+
+        const userRepo = module.get(getRepositoryToken(UserEntity)) as Repository<UserEntity>;
+
+        await userRepo.save({
+            email: 'test@example.com',
+            name: 'test',
+            phoneNumber: '+447906924825',
+            address: {
+                line1: '58 Random Road',
+                line2: 'Random Place',
+                line3: 'Really Random Place',
+                town: 'Random City',
+                county: 'Random County',
+                postcode: 'R1 3RR'
+            } as Address,
+            password: await bcrypt.hash('Password123!', 10),
+        });
     });
-  });
 
-  afterAll(async () => {
-    await app.close();
-  });
+    afterAll(async () => {
+        await app.close();
+    });
 
-  it('should login with valid credentials', async () => {
-    const res = await request(app.getHttpServer())
-      .post('/auth/login')
-      .send({ email: 'test@example.com', password: 'password123' })
-      .expect(200);
+    it('should login with valid credentials', async () => {
+        const res = await request(app.getHttpServer())
+            .post('/auth/login')
+            .send({ email: 'test@example.com', password: 'Password123!' })
+            .expect(200);
 
-    expect(res.body).toHaveProperty('accessToken');
-    expect(typeof res.body.accessToken).toBe('string');
-  });
+        expect(res.body).toHaveProperty('accessToken');
+        expect(typeof res.body.accessToken).toBe('string');
+    });
 
-  it('should fail with incorrect password', async () => {
-    const res = await request(app.getHttpServer())
-      .post('/auth/login')
-      .send({ email: 'test@example.com', password: 'wrongpass' })
-      .expect(401);
+    it('should fail with incorrect password strength', async () => {
+        const res = await request(app.getHttpServer())
+            .post('/auth/login')
+            .send({ email: 'test@example.com', password: 'password123!' })
+            .expect(400);
 
-    expect(res.body.message).toMatch(/Invalid credentials/i);
-  });
+        expect(res.body.message).toMatch(/Bad Request Exception/i);
+    });
 
-  it('should fail with missing fields', async () => {
-    await request(app.getHttpServer())
-      .post('/auth/login')
-      .send({ email: 'test@example.com' })
-      .expect(400);
-  });
+    it('should fail with incorrect password', async () => {
+        const res = await request(app.getHttpServer())
+            .post('/auth/login')
+            .send({ email: 'test@example.com', password: 'Password123!!' })
+            .expect(400);
 
-  it('should fail with non-existing user', async () => {
-    await request(app.getHttpServer())
-      .post('/auth/login')
-      .send({ email: 'ghost@example.com', password: 'irrelevant' })
-      .expect(401);
-  });
+        expect(res.body.message).toMatch(/Invalid Credentials/i);
+    });
+
+    it('should fail with missing fields', async () => {
+        await request(app.getHttpServer())
+            .post('/auth/login')
+            .send({ email: 'test@example.com' })
+            .expect(400);
+    });
+
+    it('should fail with non-existing user', async () => {
+        const res = await request(app.getHttpServer())
+            .post('/auth/login')
+            .send({ email: 'ghost@example.com', password: 'Password123!' })
+            .expect(400);
+
+        expect(res.body.message).toMatch(/Invalid Credentials/i);
+    });
 });
