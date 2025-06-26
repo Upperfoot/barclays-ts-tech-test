@@ -112,16 +112,14 @@ export class CreateUserHandler implements RequestHandler {
     ) { }
 
     async handle(request: CreateUserRequest): Promise<UserResponse> {
-        const entity = this.repo.create({
-            name: request.name,
-            email: request.email,
-            phoneNumber: request.phoneNumber,
-            address: request.address,
-            password: await bcrypt.hash(request.password, 10)
-        });
-
         try {
-            const savedUser = await this.repo.save(entity);
+            const savedUser = await this.repo.save({
+                name: request.name,
+                email: request.email,
+                phoneNumber: request.phoneNumber,
+                address: request.address,
+                password: await bcrypt.hash(request.password, 10)
+            });
             return mapUser(savedUser);
         } catch (err) {
             const isAccountNameUniqueViolation =

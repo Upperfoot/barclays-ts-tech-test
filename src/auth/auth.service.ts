@@ -12,12 +12,10 @@ export class AuthService {
     private jwtService: JwtService
   ) { }
 
-  async userExists(userUuid: string) {
-    const user = await this.usersService.findOne({
+  async getUser(userUuid: string) {
+    return await this.usersService.findOne({
       uuid: userUuid
     });
-
-    return user ? true : false;
   }
 
   async retrieveUserByCredentials(email: string, password: string): Promise<any> {
