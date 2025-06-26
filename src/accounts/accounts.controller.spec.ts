@@ -7,14 +7,15 @@ import { AccountType, Currency } from './account.entity';
 import { typeOrmConfig } from '../app.module';
 import { setupApp } from '../common/app.setup';
 import { AuthModule } from '../auth/auth.module';
-import { createTestUser, createUserTokens } from '../common/auth-test-helper';
+import { clearTables, createTestUser, createUserTokens } from '../common/auth-test-helper';
 
 describe('AccountsController (Integration)', () => {
   let app: INestApplication;
+  let module: TestingModule;
   let accessToken: string;
 
   beforeAll(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot({ ...typeOrmConfig, database: ':memory:', dropSchema: true } as TypeOrmModuleOptions),
         AuthModule,
@@ -38,8 +39,12 @@ describe('AccountsController (Integration)', () => {
     await app.close();
   });
 
+  beforeEach(async () => {
+    clearTables(module);
+  })
+
   it('creates and retrieves an account', async () => {
-    // Simulate a user creating an account (injected userId manually for now)
+    // Simulate a user creating an account
     const createRes = await request(app.getHttpServer())
       .post('/accounts')
       .set('Authorization', `Bearer ${accessToken}`)
@@ -90,5 +95,159 @@ describe('AccountsController (Integration)', () => {
         sneakyField: 'very-very-sneaky!' // unexpected field
       })
       .expect(401);
+  });
+
+  it('fails with duplicate account name for user', async () => {
+    // Simulate a user creating an account
+    const createRes = await request(app.getHttpServer())
+      .post('/accounts')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({
+        name: 'My Test Account',
+        accountType: AccountType.personal,
+        currency: Currency.GBP
+      })
+      .expect(201);
+
+    expect(createRes.body).toHaveProperty('id');
+    expect(createRes.body.name).toBe('My Test Account');
+    expect(createRes.body.accountType).toBe(AccountType.personal);
+
+    await request(app.getHttpServer())
+      .post('/accounts')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({
+        name: 'My Test Account',
+        accountType: AccountType.personal,
+        currency: Currency.GBP
+      })
+      .expect(409);
+  });
+
+  it('creates and deletes an account', async () => {
+    // Simulate a user creating an account
+    const createRes = await request(app.getHttpServer())
+      .post('/accounts')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({
+        name: 'My Test Account',
+        accountType: AccountType.personal,
+        currency: Currency.GBP
+      })
+      .expect(201);
+
+    expect(createRes.body).toHaveProperty('id');
+    expect(createRes.body.name).toBe('My Test Account');
+    expect(createRes.body.accountType).toBe(AccountType.personal);
+
+    // Retrieve accounts for user
+    await request(app.getHttpServer())
+      .delete(`/accounts/${createRes.body.id}`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(204);
+  });
+
+  it('updates an existing account', async () => {
+    // Simulate a user creating an account
+    const createRes = await request(app.getHttpServer())
+      .post('/accounts')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({
+        name: 'My Test Account',
+        accountType: AccountType.personal,
+        currency: Currency.GBP
+      })
+      .expect(201);
+
+    expect(createRes.body).toHaveProperty('id');
+    expect(createRes.body.name).toBe('My Test Account');
+    expect(createRes.body.accountType).toBe(AccountType.personal);
+
+    // Simulate a user creating an account
+    const patchRes = await request(app.getHttpServer())
+      .patch(`/accounts/${createRes.body.id}`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({
+        name: 'My Test Account Updated',
+        accountType: AccountType.personal,
+        currency: Currency.GBP
+      })
+      .expect(200);
+
+    expect(patchRes.body).toHaveProperty('id');
+    expect(patchRes.body.name).toBe('My Test Account Updated');
+    expect(patchRes.body.accountType).toBe(AccountType.personal);
+  });
+
+  it('patch should fail on incorrect id in path', async () => {
+    // Simulate a user creating an account
+    const createRes = await request(app.getHttpServer())
+      .post('/accounts')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({
+        name: 'My Test Account',
+        accountType: AccountType.personal,
+        currency: Currency.GBP
+      })
+      .expect(201);
+
+    expect(createRes.body).toHaveProperty('id');
+    expect(createRes.body.name).toBe('My Test Account');
+    expect(createRes.body.accountType).toBe(AccountType.personal);
+
+    // Simulate a user creating an account
+    const patchRes = await request(app.getHttpServer())
+      .patch(`/accounts/blah`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({
+        name: 'My Test Account Updated',
+        accountType: AccountType.personal,
+        currency: Currency.GBP
+      })
+      .expect(404);
+  });
+
+
+  it('patch should fail with conflict due to name already existing', async () => {
+    // Simulate a user creating an account
+    const createRes = await request(app.getHttpServer())
+      .post('/accounts')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({
+        name: 'My Test Account',
+        accountType: AccountType.personal,
+        currency: Currency.GBP
+      })
+      .expect(201);
+
+    expect(createRes.body).toHaveProperty('id');
+    expect(createRes.body.name).toBe('My Test Account');
+    expect(createRes.body.accountType).toBe(AccountType.personal);
+
+    // Simulate a user creating an account
+    const createRes2 = await request(app.getHttpServer())
+      .post('/accounts')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({
+        name: 'My Test Account 2',
+        accountType: AccountType.personal,
+        currency: Currency.GBP
+      })
+      .expect(201);
+
+    expect(createRes2.body).toHaveProperty('id');
+    expect(createRes2.body.name).toBe('My Test Account 2');
+    expect(createRes2.body.accountType).toBe(AccountType.personal);
+
+    // Should fail due to name already existing
+     await request(app.getHttpServer())
+      .patch(`/accounts/${createRes.body.id}`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({
+        name: 'My Test Account 2',
+        accountType: AccountType.personal,
+        currency: Currency.GBP
+      })
+      .expect(409);
   });
 });
