@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AccountEntity } from '../account.entity';
-import { AccountResponse, AuthenticatedRequest, mapAccountEntity } from './create.account.handler';
+import { AccountResponse, mapAccountEntity } from './create.account.handler';
 import { ApiProperty } from '@nestjs/swagger';
-import { RequestHandler } from '../../common/interfaces';
+import { AuthenticatedRequest, RequestHandler } from '../../common/interfaces';
 
 export class ListAccountResponse {
     @ApiProperty({

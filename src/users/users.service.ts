@@ -11,7 +11,7 @@ export class UsersService {
         private readonly repo: Repository<UserEntity>
     ) { }
 
-    async findOne(details: { email: string }): Promise<UserEntity | null> {
+    async findOne(details: { email?: string, uuid?: string }): Promise<UserEntity | null> {
         return this.repo.findOne({ where: details })
     }
 }

@@ -4,7 +4,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { QueryFailedError, Repository } from "typeorm";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEnum, IsString } from "class-validator";
-import { RequestHandler } from '../../common/interfaces';
+import { AuthenticatedRequest, RequestHandler } from '../../common/interfaces';
 
 export class CreateAccountRequest {
     @ApiProperty({
@@ -29,7 +29,6 @@ export class CreateAccountRequest {
     currency: Currency;
 }
 
-export type AuthenticatedRequest = { userId: string }
 export type AuthenticatedCreateRequest = AuthenticatedRequest & { data: CreateAccountRequest };
 
 export class AccountResponse {

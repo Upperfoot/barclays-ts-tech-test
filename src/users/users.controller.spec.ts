@@ -131,6 +131,11 @@ describe('UsersController (Integration)', () => {
       .delete('/users/me')
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(204);
+
+    const getRes = await request(app.getHttpServer())
+      .get('/users/me')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(403);
   });
 
   it('patches user with specific data', async () => {
@@ -141,7 +146,7 @@ describe('UsersController (Integration)', () => {
 
     // Simulate a user creating an account
     const patchRes = await request(app.getHttpServer())
-      .patch('/users')
+      .patch('/users/me')
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         name: "Joe Bloggs",
