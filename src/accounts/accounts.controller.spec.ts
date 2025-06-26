@@ -52,8 +52,8 @@ describe('AccountsController (Integration)', () => {
         name: 'My Test Account',
         accountType: AccountType.personal,
         currency: Currency.GBP
-      });
-      //.expect(201);
+      })
+      .expect(201);
 
     expect(createRes.body).toHaveProperty('id');
     expect(createRes.body.name).toBe('My Test Account');
