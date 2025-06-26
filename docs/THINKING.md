@@ -42,3 +42,6 @@ So successfully created the start of the project, hooked up our data layer (SQLi
 Also added a little video demo of my progress thus far
 
 ### 📅 25/06/2025 – Project Log - Authentication + Authorisation
+
+- Integrated JWT Passport, adding our JWT Strategy and AuthServices
+- Added Users & User Entities
