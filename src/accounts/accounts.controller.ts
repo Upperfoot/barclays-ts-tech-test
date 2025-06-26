@@ -4,9 +4,10 @@ import { CreateAccountHandler, CreateAccountRequest, AccountResponse } from './h
 import { ListAccountHandler, ListAccountResponse } from './handlers/list.account.handler';
 import { ApiBadRequestResponse, ApiConflictResponse, ApiCreatedResponse, ApiOperation, ApiResponse, ApiSecurity } from '@nestjs/swagger';
 import { ApiDefaultResponses, BadRequestErrorResponse, ConflictErrorResponse, GuardedApiEndpoints } from '../common/error-responses.decorator';
-import { CurrentUser, JwtUser } from '../common/current-user.decorator';
+import { CurrentUser } from '../common/current-user.decorator';
 import { DeleteAccountHandler } from './handlers/delete.account.handler';
 import { PatchAccountHandler, PatchAccountRequest } from './handlers/patch.account.handler';
+import { UserEntity } from '../users/user.entity';
 
 @ApiDefaultResponses()
 @GuardedApiEndpoints()
@@ -25,11 +26,11 @@ export class AccountsController {
   @ApiConflictResponse({ description: 'Account with generated details already exists', type: ConflictErrorResponse })
   @ApiBadRequestResponse({ description: 'Invalid details supplied', type: BadRequestErrorResponse })
   async createAccount(
-    @CurrentUser() user: JwtUser,
+    @CurrentUser() user: UserEntity,
     @Body() body: CreateAccountRequest
   ): Promise<AccountResponse> {
     return this.createAccountHandler.handle({
-      userId: user.id,
+      userId: user.uuid,
       data: body
     });
   }
@@ -37,19 +38,19 @@ export class AccountsController {
   @Get()
   @ApiOperation({ summary: 'Fetch all accounts for a given user' })
   @ApiResponse({ status: 200, description: 'List of accounts', type: [ListAccountResponse] })
-  async listAccounts(@CurrentUser() user: JwtUser): Promise<ListAccountResponse> {
-    return this.listAccountHandler.handle({ userId: user.id });
+  async listAccounts(@CurrentUser() user: UserEntity): Promise<ListAccountResponse> {
+    return this.listAccountHandler.handle({ userId: user.uuid });
   }
 
   @Patch(':accountId')
   @ApiOperation({ summary: 'Patch an account with new details' })
   @ApiResponse({ status: 200, description: 'Update an account', type: AccountResponse })
   async patchAccount(
-    @CurrentUser() user: JwtUser,
+    @CurrentUser() user: UserEntity,
     @Param('accountId') accountId: string,
     @Body() body: PatchAccountRequest
   ): Promise<AccountResponse> {
-    return this.patchAccountHandler.handle({ userId: user.id, accountId, data: body });
+    return this.patchAccountHandler.handle({ userId: user.uuid, accountId, data: body });
   }
 
   @Delete(':accountId')
@@ -57,9 +58,9 @@ export class AccountsController {
   @ApiResponse({ status: 204, description: 'Delete an account' })
   @HttpCode(204)
   async deleteAccount(
-    @CurrentUser() user: JwtUser,
+    @CurrentUser() user: UserEntity,
     @Param('accountId') accountId: string,
   ) {
-    await this.deleteAccountHandler.handle({ userId: user.id, accountId });
+    await this.deleteAccountHandler.handle({ userId: user.uuid, accountId });
   }
 }

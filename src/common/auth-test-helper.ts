@@ -4,7 +4,8 @@ import { AddressEntity, UserEntity } from "../users/user.entity";
 import { Repository } from "typeorm";
 import * as bcrypt from 'bcrypt';
 import { AuthService } from "../auth/auth.service";
-import { AccountEntity } from "../accounts/account.entity";
+import { AccountEntity, AccountType, Currency } from "../accounts/account.entity";
+import { randomDigitString } from "../accounts/handlers/create.account.handler";
 
 export async function createTestUser(module: TestingModule): Promise<UserEntity> {
     const userRepo = module.get(getRepositoryToken(UserEntity)) as Repository<UserEntity>;
@@ -22,6 +23,19 @@ export async function createTestUser(module: TestingModule): Promise<UserEntity>
             postcode: 'R1 3RR'
         } as AddressEntity,
         password: await bcrypt.hash('Password123!', 10),
+    });
+}
+
+export async function createTestAccount(module: TestingModule, userId: string, name: string): Promise<AccountEntity> {
+    const userRepo = module.get(getRepositoryToken(AccountEntity)) as Repository<AccountEntity>;
+
+    return await userRepo.save({
+        userId,
+        accountType: AccountType.personal,
+        currency: Currency.GBP,
+        name,
+        accountNumber: randomDigitString(8),
+        sortCode: randomDigitString(6)
     });
 }
 

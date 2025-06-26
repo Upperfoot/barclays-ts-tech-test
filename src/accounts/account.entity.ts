@@ -1,12 +1,11 @@
+import { Currency } from '../common/interfaces';
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Index, Generated } from 'typeorm';
 
 export enum AccountType {
     personal = 'personal',
 }
 
-export enum Currency {
-    GBP = 'GBP',
-}
+export { Currency }
 
 @Index(['accountNumber', 'sortCode'], { unique: true })
 @Index(['userId', 'name'], { unique: true }) // Optional: user can't have two "Savings"
