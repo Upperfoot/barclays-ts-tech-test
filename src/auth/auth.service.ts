@@ -15,7 +15,7 @@ export class AuthService {
   async userExists(userUuid: string) {
     const user = await this.usersService.findOne({
       uuid: userUuid
-    })
+    });
 
     return user ? true : false;
   }
