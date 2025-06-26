@@ -22,6 +22,7 @@ This document captures the discrepancies, edge cases, and areas of ambiguity ide
 - ❌ No password field (yet auth is required).
 - ❌ No field-level control on PATCH — fields like email or ID should likely be immutable.
 - ❌ No uniqueness constraint (email/username).
+- ❌ Authenticated User API should simply return the User from the information within the Token (we don't need to pass in a separate userId as a param)
 
 ---
 
