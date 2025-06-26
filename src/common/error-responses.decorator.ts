@@ -1,5 +1,6 @@
-import { applyDecorators } from '@nestjs/common';
-import { ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiProperty, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { applyDecorators, UseGuards } from '@nestjs/common';
+import { ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiProperty, ApiSecurity, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { JwtGuard } from '../auth/jwt.guard';
 
 export interface ErrorResponse {
   statusCode: number;
@@ -88,4 +89,11 @@ export function ApiDefaultResponses() {
     ApiForbiddenResponse({ description: 'The user is not allowed to access this resource', type: ForbiddenErrorResponse }),
     ApiInternalServerErrorResponse({ description: 'An unexpected error occurred', type: InternalServerErrorResponse }),
   );
+}
+
+export function GuardedApiEndpoints() {
+  return applyDecorators(
+      ApiSecurity('bearerAuth'),
+      UseGuards(JwtGuard)
+  )
 }

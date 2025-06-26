@@ -26,18 +26,22 @@ export async function createTestUser(module: TestingModule): Promise<UserEntity>
 }
 
 export async function clearTables(module: TestingModule) {
-    const userRepo = module.get(getRepositoryToken(UserEntity)) as Repository<UserEntity>;
-    
-    if(userRepo) {
-        userRepo.deleteAll();
-    }
-    
-    const accountsRepo = module.get(getRepositoryToken(AccountEntity)) as Repository<AccountEntity>;
-    
-    if(accountsRepo) {
-        accountsRepo.deleteAll();
-    }
-} 
+    try {
+        const userRepo = module.get(getRepositoryToken(UserEntity)) as Repository<UserEntity>;
+
+        if (userRepo) {
+            userRepo.deleteAll();
+        }
+    } catch { }
+
+    try {
+        const accountsRepo = module.get(getRepositoryToken(AccountEntity)) as Repository<AccountEntity>;
+
+        if (accountsRepo) {
+            accountsRepo.deleteAll();
+        }
+    } catch { }
+}
 
 export async function createUserTokens(module: TestingModule, user: UserEntity) {
     const authService = module.get(AuthService) as AuthService;

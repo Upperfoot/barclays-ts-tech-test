@@ -1,17 +1,15 @@
 // Controller to handle /accounts endpoints
-import { Controller, Post, Body, Get, UseGuards, Delete, Patch, HttpCode, Param } from '@nestjs/common';
+import { Controller, Post, Body, Get, Delete, Patch, HttpCode, Param } from '@nestjs/common';
 import { CreateAccountHandler, CreateAccountRequest, AccountResponse } from './handlers/create.account.handler';
 import { ListAccountHandler, ListAccountResponse } from './handlers/list.account.handler';
 import { ApiBadRequestResponse, ApiConflictResponse, ApiCreatedResponse, ApiOperation, ApiResponse, ApiSecurity } from '@nestjs/swagger';
-import { ApiDefaultResponses, BadRequestErrorResponse, ConflictErrorResponse } from '../common/error-responses.decorator';
-import { JwtGuard } from '../auth/jwt.guard';
+import { ApiDefaultResponses, BadRequestErrorResponse, ConflictErrorResponse, GuardedApiEndpoints } from '../common/error-responses.decorator';
 import { CurrentUser, JwtUser } from '../common/current-user.decorator';
 import { DeleteAccountHandler } from './handlers/delete.account.handler';
 import { PatchAccountHandler, PatchAccountRequest } from './handlers/patch.account.handler';
 
 @ApiDefaultResponses()
-@ApiSecurity('bearerAuth')
-@UseGuards(JwtGuard)
+@GuardedApiEndpoints()
 @Controller('accounts')
 export class AccountsController {
   constructor(
@@ -45,7 +43,7 @@ export class AccountsController {
 
   @Patch(':accountId')
   @ApiOperation({ summary: 'Patch an account with new details' })
-  @ApiResponse({ status: 200, description: 'Update an account', type: [ListAccountResponse] })
+  @ApiResponse({ status: 200, description: 'Update an account', type: AccountResponse })
   async patchAccount(
     @CurrentUser() user: JwtUser,
     @Param('accountId') accountId: string,
@@ -56,7 +54,7 @@ export class AccountsController {
 
   @Delete(':accountId')
   @ApiOperation({ summary: 'Delete an account' })
-  @ApiResponse({ status: 200, description: 'Delete an account', type: [ListAccountResponse] })
+  @ApiResponse({ status: 204, description: 'Delete an account' })
   @HttpCode(204)
   async deleteAccount(
     @CurrentUser() user: JwtUser,
