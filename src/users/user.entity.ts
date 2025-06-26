@@ -1,7 +1,7 @@
 import { Exclude } from 'class-transformer';
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Index, Generated } from 'typeorm';
 
-export class Address {
+export interface AddressEntity {
     line1: string;
     line2: string;
     line3: string;
@@ -19,6 +19,7 @@ export class UserEntity {
 
     @Generated('uuid')
     @Column()
+    @Exclude()
     uuid: string;
 
     @Column()
@@ -34,7 +35,7 @@ export class UserEntity {
     @Column({
         type: 'json'
     })
-    address: Address;
+    address: AddressEntity;
 
     @Column()
     phoneNumber: string;

@@ -2,8 +2,10 @@
 import { Controller, Post, Body, HttpStatus, HttpCode } from '@nestjs/common';
 import { LoginHandler, LoginRequest, LoginResponse } from './handlers/login.handler';
 import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiDefaultResponses } from '../common/error-responses.decorator';
 
 @Controller('auth')
+@ApiDefaultResponses()
 export class AuthController {
   constructor(private loginHandler: LoginHandler) {}
 

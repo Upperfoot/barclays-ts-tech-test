@@ -2,6 +2,8 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsString, IsStrongPassword } from 'class-validator';
 import { AuthService } from '../auth.service';
+import { mapUser, UserResponse } from '../../users/handlers/create.user.handler';
+import { RequestHandler } from '../../common/interfaces';
 
 export class LoginRequest {
     @ApiProperty()
@@ -19,11 +21,11 @@ export class LoginResponse {
     accessToken: string;
 
     @ApiProperty()
-    user: object;
+    user: UserResponse;
 }
 
 @Injectable()
-export class LoginHandler {
+export class LoginHandler implements RequestHandler {
     constructor(
         private readonly authService: AuthService
     ) { }
@@ -38,7 +40,7 @@ export class LoginHandler {
         const accessTokens = this.authService.createJwtTokens(validatedUser);
 
         return {
-            user: validatedUser,
+            user: mapUser(validatedUser),
             accessToken: accessTokens.accessToken
         };
     }

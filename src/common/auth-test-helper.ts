@@ -1,6 +1,6 @@
 import { TestingModule } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
-import { Address, UserEntity } from "../users/user.entity";
+import { AddressEntity, UserEntity } from "../users/user.entity";
 import { Repository } from "typeorm";
 import * as bcrypt from 'bcrypt';
 import { AuthService } from "../auth/auth.service";
@@ -13,13 +13,13 @@ export async function createTestUser(module: TestingModule): Promise<UserEntity>
         name: 'test',
         phoneNumber: '+447906924825',
         address: {
-        line1: '58 Random Road',
-        line2: 'Random Place',
-        line3: 'Really Random Place',
-        town: 'Random City',
-        county: 'Random County',
-        postcode: 'R1 3RR'
-        } as Address,
+            line1: '58 Random Road',
+            line2: 'Random Place',
+            line3: 'Really Random Place',
+            town: 'Random City',
+            county: 'Random County',
+            postcode: 'R1 3RR'
+        } as AddressEntity,
         password: await bcrypt.hash('Password123!', 10),
     });
 }
