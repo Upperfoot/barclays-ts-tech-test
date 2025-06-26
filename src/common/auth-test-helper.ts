@@ -12,7 +12,7 @@ export async function createTestUser(module: TestingModule): Promise<UserEntity>
     return await userRepo.save({
         email: 'test@example.com',
         name: 'test',
-        phoneNumber: '+447906924825',
+        phoneNumber: '+447912345678',
         address: {
             line1: '58 Random Road',
             line2: 'Random Place',

@@ -50,4 +50,4 @@ Also added a little video demo of my progress thus far
 
 ## User Endpoints
 
-- As spoke about before will derive the userId from the JWT token in the payload, no need to pass this about
+- As spoke about before will derive the userId from the JWT token in the payload, no need to pass this about, will change this from /users/{userId} to /users/me instead
