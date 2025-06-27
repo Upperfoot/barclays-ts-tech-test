@@ -55,7 +55,7 @@ describe('AccountsController (Integration)', () => {
   it('creates and retrieves an account', async () => {
     // Simulate a user creating an account
     const createRes = await request(app.getHttpServer())
-      .post('/accounts')
+      .post('/v1/accounts')
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         name: 'My Test Account',
@@ -70,7 +70,7 @@ describe('AccountsController (Integration)', () => {
 
     // Retrieve accounts for user
     const res = await request(app.getHttpServer())
-      .get(`/accounts`)
+      .get(`/v1/accounts`)
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(200);
 
@@ -82,7 +82,7 @@ describe('AccountsController (Integration)', () => {
 
   it('rejects unknown fields in payload', async () => {
     await request(app.getHttpServer())
-      .post('/accounts')
+      .post('/v1/accounts')
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         name: 'Hacker Account',
@@ -95,7 +95,7 @@ describe('AccountsController (Integration)', () => {
 
   it('rejects unauthorised request', async () => {
     await request(app.getHttpServer())
-      .post('/accounts')
+      .post('/v1/accounts')
       .set('Authorization', `Bearer Fake-Token-Here`)
       .send({
         name: 'Hacker Account',
@@ -109,7 +109,7 @@ describe('AccountsController (Integration)', () => {
   it('fails with duplicate account name for user', async () => {
     // Simulate a user creating an account
     const createRes = await request(app.getHttpServer())
-      .post('/accounts')
+      .post('/v1/accounts')
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         name: 'My Test Account',
@@ -123,7 +123,7 @@ describe('AccountsController (Integration)', () => {
     expect(createRes.body.accountType).toBe(AccountType.personal);
 
     await request(app.getHttpServer())
-      .post('/accounts')
+      .post('/v1/accounts')
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         name: 'My Test Account',
@@ -136,7 +136,7 @@ describe('AccountsController (Integration)', () => {
   it('creates and deletes an account', async () => {
     // Simulate a user creating an account
     const createRes = await request(app.getHttpServer())
-      .post('/accounts')
+      .post('/v1/accounts')
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         name: 'My Test Account',
@@ -151,7 +151,7 @@ describe('AccountsController (Integration)', () => {
 
     // Retrieve accounts for user
     await request(app.getHttpServer())
-      .delete(`/accounts/${createRes.body.id}`)
+      .delete(`/v1/accounts/${createRes.body.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(204);
   });
@@ -159,7 +159,7 @@ describe('AccountsController (Integration)', () => {
   it('attempt to delete invalid account', async () => {
     // Retrieve accounts for user
     await request(app.getHttpServer())
-      .delete(`/accounts/307c5efb-e84a-48d8-81ed-d73c76ebf7a1`)
+      .delete(`/v1/accounts/307c5efb-e84a-48d8-81ed-d73c76ebf7a1`)
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(404);
   });
@@ -167,7 +167,7 @@ describe('AccountsController (Integration)', () => {
   it('updates an existing account', async () => {
     // Simulate a user creating an account
     const createRes = await request(app.getHttpServer())
-      .post('/accounts')
+      .post('/v1/accounts')
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         name: 'My Test Account',
@@ -182,7 +182,7 @@ describe('AccountsController (Integration)', () => {
 
     // Simulate a user creating an account
     const patchRes = await request(app.getHttpServer())
-      .patch(`/accounts/${createRes.body.id}`)
+      .patch(`/v1/accounts/${createRes.body.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         name: 'My Test Account Updated',
@@ -199,7 +199,7 @@ describe('AccountsController (Integration)', () => {
   it('patch should fail on incorrect id in path', async () => {
     // Simulate a user creating an account
     const createRes = await request(app.getHttpServer())
-      .post('/accounts')
+      .post('/v1/accounts')
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         name: 'My Test Account',
@@ -214,7 +214,7 @@ describe('AccountsController (Integration)', () => {
 
     // Simulate a user creating an account
     const patchRes = await request(app.getHttpServer())
-      .patch(`/accounts/blah`)
+      .patch(`/v1/accounts/blah`)
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         name: 'My Test Account Updated',
@@ -227,7 +227,7 @@ describe('AccountsController (Integration)', () => {
   it('patch should fail with conflict due to name already existing', async () => {
     // Simulate a user creating an account
     const createRes = await request(app.getHttpServer())
-      .post('/accounts')
+      .post('/v1/accounts')
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         name: 'My Test Account',
@@ -242,7 +242,7 @@ describe('AccountsController (Integration)', () => {
 
     // Simulate a user creating an account
     const createRes2 = await request(app.getHttpServer())
-      .post('/accounts')
+      .post('/v1/accounts')
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         name: 'My Test Account 2',
@@ -257,7 +257,7 @@ describe('AccountsController (Integration)', () => {
 
     // Should fail due to name already existing
     await request(app.getHttpServer())
-      .patch(`/accounts/${createRes.body.id}`)
+      .patch(`/v1/accounts/${createRes.body.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         name: 'My Test Account 2',
@@ -282,7 +282,7 @@ describe('AccountsController (Integration)', () => {
 
     // Simulate a user creating an account
     const createRes = await request(app.getHttpServer())
-      .post('/accounts')
+      .post('/v1/accounts')
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         name: 'My Test Account',
@@ -297,7 +297,7 @@ describe('AccountsController (Integration)', () => {
 
     // Simulate a user creating an account, should fail due to account number and sort code being the same
     const createRes2 = await request(app.getHttpServer())
-      .post('/accounts')
+      .post('/v1/accounts')
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         name: 'My Test Account 2',

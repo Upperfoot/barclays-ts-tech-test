@@ -10,4 +10,7 @@ export function setupApp(app: INestApplication<any>) {
     }),
   );
   app.useGlobalFilters(new ValidationFilter());
+
+  // Set global route prefix here
+  app.setGlobalPrefix('v1');
 }

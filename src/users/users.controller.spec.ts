@@ -57,7 +57,7 @@ describe('UsersController (Integration)', () => {
   it('creates a new user', async () => {
     // Simulate a user creating an account
     const createRes = await request(app.getHttpServer())
-      .post('/users')
+      .post('/v1/users')
       .send({
         name: 'Joe Bloggs',
         email: 'joe@bloggs.com',
@@ -98,20 +98,20 @@ describe('UsersController (Integration)', () => {
 
     // Simulate a user creating an account
     await request(app.getHttpServer())
-      .post('/users')
+      .post('/v1/users')
       .send(createUserPayload)
       .expect(201);
 
     // Simulate creating a user with same email
     await request(app.getHttpServer())
-      .post('/users')
+      .post('/v1/users')
       .send(createUserPayload)
       .expect(409);
   });
 
   it('rejects unknown fields in payload', async () => {
     await request(app.getHttpServer())
-      .post('/users')
+      .post('/v1/users')
       .send({
         name: 'Joe Bloggs',
         email: 'joe@bloggs.com',
@@ -131,7 +131,7 @@ describe('UsersController (Integration)', () => {
 
   it('rejects missing fields in payload', async () => {
     await request(app.getHttpServer())
-      .post('/users')
+      .post('/v1/users')
       .send({
         name: 'Joe Bloggs',
         address: {
@@ -152,7 +152,7 @@ describe('UsersController (Integration)', () => {
     const accessToken = testUserTokens.accessToken;
 
     const res = await request(app.getHttpServer())
-      .get('/users/me')
+      .get('/v1/users/me')
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(200);
 
@@ -175,12 +175,12 @@ describe('UsersController (Integration)', () => {
     const accessToken = testUserTokens.accessToken;
 
     const res = await request(app.getHttpServer())
-      .delete('/users/me')
+      .delete('/v1/users/me')
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(204);
 
     const getRes = await request(app.getHttpServer())
-      .get('/users/me')
+      .get('/v1/users/me')
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(403);
   });
@@ -245,7 +245,7 @@ describe('UsersController (Integration)', () => {
 
     // Simulate a user creating an account
     const patchRes = await request(app.getHttpServer())
-      .patch('/users/me')
+      .patch('/v1/users/me')
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         name: 'Joe Bloggs',
@@ -285,7 +285,7 @@ describe('UsersController (Integration)', () => {
 
     // Simulate a user creating an account
     const patchRes = await request(app.getHttpServer())
-      .patch('/users/me')
+      .patch('/v1/users/me')
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         name: 'Joe Bloggs',

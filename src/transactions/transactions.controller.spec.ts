@@ -73,7 +73,7 @@ describe('TransactionsController (Integration)', () => {
     const account = await createTestAccount(module, userId, 'Test Account 1');
 
     const createRes = await request(app.getHttpServer())
-      .post(`/accounts/${account.uuid}/transactions`)
+      .post(`/v1/accounts/${account.uuid}/transactions`)
       .set('Authorization', `Bearer ${accessToken}`)
       .set('Idempotency-Key', crypto.randomUUID())
       .send({
@@ -101,7 +101,7 @@ describe('TransactionsController (Integration)', () => {
     const account = await createTestAccount(module, userId, 'Test Account 1');
     const idempotentKey = crypto.randomUUID();
     const createRes = await request(app.getHttpServer())
-      .post(`/accounts/${account.uuid}/transactions`)
+      .post(`/v1/accounts/${account.uuid}/transactions`)
       .set('Authorization', `Bearer ${accessToken}`)
       .set('Idempotency-Key', idempotentKey)
       .send({
@@ -113,7 +113,7 @@ describe('TransactionsController (Integration)', () => {
       .expect(201);
 
     const retryRes = await request(app.getHttpServer())
-      .post(`/accounts/${account.uuid}/transactions`)
+      .post(`/v1/accounts/${account.uuid}/transactions`)
       .set('Authorization', `Bearer ${accessToken}`)
       .set('Idempotency-Key', idempotentKey)
       .send({
@@ -142,7 +142,7 @@ describe('TransactionsController (Integration)', () => {
 
     await request(app.getHttpServer())
       .get(
-        `/accounts/${account.uuid}/transactions/90661316-3fcd-42a6-a287-29ae9cb9412c`,
+        `/v1/accounts/${account.uuid}/transactions/90661316-3fcd-42a6-a287-29ae9cb9412c`,
       )
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(404);
@@ -153,7 +153,7 @@ describe('TransactionsController (Integration)', () => {
     await createTestAccount(module, userId, 'Test Account 1');
 
     await request(app.getHttpServer())
-      .post(`/accounts/random-bad-id/transactions`)
+      .post(`/v1/accounts/random-bad-id/transactions`)
       .set('Authorization', `Bearer ${accessToken}`)
       .set('Idempotency-Key', crypto.randomUUID())
       .send({
@@ -175,7 +175,7 @@ describe('TransactionsController (Integration)', () => {
     );
 
     await request(app.getHttpServer())
-      .post(`/accounts/${differentUserAccount.uuid}/transactions`)
+      .post(`/v1/accounts/${differentUserAccount.uuid}/transactions`)
       .set('Authorization', `Bearer ${accessToken}`)
       .set('Idempotency-Key', crypto.randomUUID())
       .send({
@@ -192,7 +192,7 @@ describe('TransactionsController (Integration)', () => {
     const account = await createTestAccount(module, userId, 'Test Account 1');
 
     const createRes = await request(app.getHttpServer())
-      .post(`/accounts/${account.uuid}/transactions`)
+      .post(`/v1/accounts/${account.uuid}/transactions`)
       .set('Authorization', `Bearer ${accessToken}`)
       .set('Idempotency-Key', crypto.randomUUID())
       .send({
@@ -215,7 +215,7 @@ describe('TransactionsController (Integration)', () => {
     expect(createRes.body).toHaveProperty('updatedTimestamp');
 
     const getRes = await request(app.getHttpServer())
-      .get(`/accounts/${account.uuid}/transactions/${createRes.body.id}`)
+      .get(`/v1/accounts/${account.uuid}/transactions/${createRes.body.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(200);
 
@@ -246,7 +246,7 @@ describe('TransactionsController (Integration)', () => {
     const account = await createTestAccount(module, userId, 'Test Account 1');
 
     await request(app.getHttpServer())
-      .post(`/accounts/${account.uuid}/transactions`)
+      .post(`/v1/accounts/${account.uuid}/transactions`)
       .set('Authorization', `Bearer ${accessToken}`)
       .set('Idempotency-Key', crypto.randomUUID())
       .send({
@@ -272,19 +272,19 @@ describe('TransactionsController (Integration)', () => {
     // Create two promises that run in parallel
     const [tx1Res, tx2Res, tx3Res] = await Promise.all([
       request(app.getHttpServer())
-        .post(`/accounts/${account.uuid}/transactions`)
+        .post(`/v1/accounts/${account.uuid}/transactions`)
         .set('Authorization', `Bearer ${accessToken}`)
         .set('Idempotency-Key', crypto.randomUUID())
         .send(transactionPayload),
 
       request(app.getHttpServer())
-        .post(`/accounts/${account.uuid}/transactions`)
+        .post(`/v1/accounts/${account.uuid}/transactions`)
         .set('Authorization', `Bearer ${accessToken}`)
         .set('Idempotency-Key', crypto.randomUUID())
         .send(transactionPayload),
 
       request(app.getHttpServer())
-        .post(`/accounts/${account.uuid}/transactions`)
+        .post(`/v1/accounts/${account.uuid}/transactions`)
         .set('Authorization', `Bearer ${accessToken}`)
         .set('Idempotency-Key', crypto.randomUUID())
         .send(transactionPayload),
@@ -335,19 +335,19 @@ describe('TransactionsController (Integration)', () => {
     // Create two promises that run in parallel
     const [tx1Res, tx2Res, tx3Res] = await Promise.all([
       request(app.getHttpServer())
-        .post(`/accounts/${account.uuid}/transactions`)
+        .post(`/v1/accounts/${account.uuid}/transactions`)
         .set('Authorization', `Bearer ${accessToken}`)
         .set('Idempotency-Key', crypto.randomUUID())
         .send(transactionDepositPayload),
 
       request(app.getHttpServer())
-        .post(`/accounts/${account.uuid}/transactions`)
+        .post(`/v1/accounts/${account.uuid}/transactions`)
         .set('Authorization', `Bearer ${accessToken}`)
         .set('Idempotency-Key', crypto.randomUUID())
         .send(transactionWithdrawalPayload),
 
       request(app.getHttpServer())
-        .post(`/accounts/${account.uuid}/transactions`)
+        .post(`/v1/accounts/${account.uuid}/transactions`)
         .set('Authorization', `Bearer ${accessToken}`)
         .set('Idempotency-Key', crypto.randomUUID())
         .send(transactionWithdrawalPayload),
@@ -398,26 +398,26 @@ describe('TransactionsController (Integration)', () => {
     // Create two promises that run in parallel
     const [tx1Res, tx2Res, tx3Res] = await Promise.all([
       request(app.getHttpServer())
-        .post(`/accounts/${account.uuid}/transactions`)
+        .post(`/v1/accounts/${account.uuid}/transactions`)
         .set('Authorization', `Bearer ${accessToken}`)
         .set('Idempotency-Key', crypto.randomUUID())
         .send(transactionDepositPayload),
 
       request(app.getHttpServer())
-        .post(`/accounts/${account.uuid}/transactions`)
+        .post(`/v1/accounts/${account.uuid}/transactions`)
         .set('Authorization', `Bearer ${accessToken}`)
         .set('Idempotency-Key', crypto.randomUUID())
         .send(transactionWithdrawalPayload),
 
       request(app.getHttpServer())
-        .post(`/accounts/${account.uuid}/transactions`)
+        .post(`/v1/accounts/${account.uuid}/transactions`)
         .set('Authorization', `Bearer ${accessToken}`)
         .set('Idempotency-Key', crypto.randomUUID())
         .send(transactionWithdrawalPayload),
     ]);
 
     const getRes = await request(app.getHttpServer())
-      .get(`/accounts/${account.uuid}/transactions`)
+      .get(`/v1/accounts/${account.uuid}/transactions`)
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(200);
 

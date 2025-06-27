@@ -39,7 +39,7 @@ describe('AuthController (e2e)', () => {
 
   it('should login with valid credentials', async () => {
     const res = await request(app.getHttpServer())
-      .post('/auth/login')
+      .post('/v1/auth/login')
       .send({ email: 'test@example.com', password: 'Password123!' })
       .expect(200);
 
@@ -49,7 +49,7 @@ describe('AuthController (e2e)', () => {
 
   it('should fail with incorrect password strength', async () => {
     const res = await request(app.getHttpServer())
-      .post('/auth/login')
+      .post('/v1/auth/login')
       .send({ email: 'test@example.com', password: 'password123!' })
       .expect(400);
 
@@ -58,7 +58,7 @@ describe('AuthController (e2e)', () => {
 
   it('should fail with incorrect password', async () => {
     const res = await request(app.getHttpServer())
-      .post('/auth/login')
+      .post('/v1/auth/login')
       .send({ email: 'test@example.com', password: 'Password123!!' })
       .expect(400);
 
@@ -67,14 +67,14 @@ describe('AuthController (e2e)', () => {
 
   it('should fail with missing fields', async () => {
     await request(app.getHttpServer())
-      .post('/auth/login')
+      .post('/v1/auth/login')
       .send({ email: 'test@example.com' })
       .expect(400);
   });
 
   it('should fail with non-existing user', async () => {
     const res = await request(app.getHttpServer())
-      .post('/auth/login')
+      .post('/v1/auth/login')
       .send({ email: 'ghost@example.com', password: 'Password123!' })
       .expect(400);
 
