@@ -30,7 +30,7 @@ export function applyIdempotencyHeader() {
     return applyDecorators(
         ApiHeader({
             name: IDEMPOTENCY_HEADER_KEY,
-            description: 'A unique key to ensure the request is idempotent',
+            description: 'A unique key to ensure the request is idempotent, must be in uuid format',
             required: true,
             schema: { type: 'string' },
         }),
