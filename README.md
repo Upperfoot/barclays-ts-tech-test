@@ -41,6 +41,10 @@ $ npm run start:prod
 
 Once running from above commands - navigate here [Swagger Playground + Documentation](http://localhost:3000/api)
 
+Should look like this
+
+<img src="docs/image.png" alt="Swagger Screenshot" width="500"/>
+
 ## Run tests
 
 ```bash
