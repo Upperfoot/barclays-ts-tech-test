@@ -41,7 +41,7 @@ So successfully created the start of the project, hooked up our data layer (SQLi
 
 Also added a little video demo of my progress thus far
 
-### 📅 25/06/2025 - 26/06/2025 – Project Log - Authentication + Authorisation
+### 📅 25/06/2025 - 26/06/2025 – Project Log - Authentication + Authorisation + Transactions
 
 - Integrated JWT Passport, adding our JWT Strategy and AuthServices
 - Added Users & User Entities
@@ -55,4 +55,13 @@ Also added a little video demo of my progress thus far
 
 ## Transactions 
 
-Now that we have our Authentication, User Endpoints & Account Endpoints. Let's move forward to our Transactions, starting off with our tests of creating a Transaction
+Now that we have our Authentication, User Endpoints & Account Endpoints. Let's move forward to our Transactions, starting off with our tests of creating a Transaction.
+
+- Added Tests for Transaction & Balance Updating
+- Added Tests for simultaneous transactions to check if locking works (using Promise.all)
+- I've kept responses as pending on create transaction responses, so we can demonstrate a "async" processing of Transactions
+
+### 📅 27/06/2025 – Project Log - Transactions + Refactor + Final Tests
+
+Now we have Users, Accounts, Transactions (with Transactions/Locks) and Authentication all running, now is the time to do a bit of refactoring and scanning through to see any potential issues in our testing methodology, and to look at adding Idempotency to our
+transaction layer.
