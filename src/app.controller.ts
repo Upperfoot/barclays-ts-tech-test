@@ -7,6 +7,10 @@ export class AppController {
 
   @Get()
   getHello(): string {
+    /*
+     * Health Checks are good to do here, not just testing if the system responds,
+     * but should check if it's upstream services do as well (e.g. databases)
+     */
     return this.appService.getHello();
   }
 }

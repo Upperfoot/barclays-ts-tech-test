@@ -34,11 +34,11 @@ $ npm run start
 # watch mode
 $ npm run start:dev
 
-# production mode
+# optional - production mode
 $ npm run start:prod
 ```
 
-[Swagger Playground + Documentation](http://localhost:3000/api)
+Once running from above commands - navigate here [Swagger Playground + Documentation](http://localhost:3000/api)
 
 ## Run tests
 
@@ -53,8 +53,15 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+Current coverage is 
+
+File                             | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+---------------------------------|---------|----------|---------|---------|-------------------
+All files                        |   97.07 |     86.2 |   97.61 |    97.2 |  
+
 ## 📚 Additional Docs
 
+- [Project Structure](docs/PROJECT_STRUCTURE.md)
 - [Take Home Test/Spec Review](docs/SPEC_REVIEW.md)
 - [Technology & Framework Choices](docs/TECHNOLOGY.md)
 - [Engineering Methodology](docs/ENGINEERING.md)

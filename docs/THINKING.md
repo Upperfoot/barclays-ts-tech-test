@@ -65,3 +65,10 @@ Now that we have our Authentication, User Endpoints & Account Endpoints. Let's m
 
 Now we have Users, Accounts, Transactions (with Transactions/Locks) and Authentication all running, now is the time to do a bit of refactoring and scanning through to see any potential issues in our testing methodology, and to look at adding Idempotency to our
 transaction layer.
+
+- Added Idempotency Layer
+- Refactored Tests for better coverage
+- Also added note in app.controller.ts for health checks
+- May not be fully DRY / SOLID but forms a good basis
+
+End of the road with this project for now!
