@@ -4,7 +4,7 @@ Thanks for reviewing this submission. This repo contains a RESTful API for a fic
 
 It’s built using **TypeScript + NestJS**, and you can read more about that choice in [docs/TECHNOLOGY.md](docs/TECHNOLOGY.md).
 
-Also I've documented my Journey with videos on specific milestones (Accounts, Users, Authentication and Transactions) in the `docs/videos` directory
+Also I've documented my Journey with videos on specific milestones (Accounts, Users, Authentication and Transactions) in the [docs/videos](docs/videos). directory
 
 ## Pre-Project setup
 
