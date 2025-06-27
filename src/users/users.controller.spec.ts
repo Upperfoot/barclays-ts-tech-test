@@ -1,11 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, NotFoundException } from '@nestjs/common';
 import * as request from 'supertest';
-import { getRepositoryToken, TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import {
+  getRepositoryToken,
+  TypeOrmModule,
+  TypeOrmModuleOptions,
+} from '@nestjs/typeorm';
 import { typeOrmConfig } from '../app.module';
 import { setupApp } from '../common/app.setup';
 import { AuthModule } from '../auth/auth.module';
-import { clearTables, createTestUser, createUserTokens } from '../common/auth-test-helper';
+import {
+  clearTables,
+  createTestUser,
+  createUserTokens,
+} from '../common/auth-test-helper';
 import { UsersModule } from './users.module';
 import { CreateUserRequest } from './handlers/create.user.handler';
 import { UserEntity } from './user.entity';
@@ -21,7 +29,11 @@ describe('UsersController (Integration)', () => {
   beforeAll(async () => {
     module = await Test.createTestingModule({
       imports: [
-        TypeOrmModule.forRoot({ ...typeOrmConfig, database: ':memory:', dropSchema: true } as TypeOrmModuleOptions),
+        TypeOrmModule.forRoot({
+          ...typeOrmConfig,
+          database: ':memory:',
+          dropSchema: true,
+        } as TypeOrmModuleOptions),
         AuthModule,
         UsersModule,
       ],
@@ -40,25 +52,25 @@ describe('UsersController (Integration)', () => {
 
   beforeEach(async () => {
     clearTables(module);
-  })
+  });
 
   it('creates a new user', async () => {
     // Simulate a user creating an account
     const createRes = await request(app.getHttpServer())
       .post('/users')
       .send({
-        name: "Joe Bloggs",
-        email: "joe@bloggs.com",
-        phoneNumber: "+447912345678",
-        password: "MajorRabbit23!1@",
+        name: 'Joe Bloggs',
+        email: 'joe@bloggs.com',
+        phoneNumber: '+447912345678',
+        password: 'MajorRabbit23!1@',
         address: {
-          line1: "string",
-          line2: "string",
-          line3: "string",
-          town: "string",
-          county: "string",
-          postcode: "string"
-        }
+          line1: 'string',
+          line2: 'string',
+          line3: 'string',
+          town: 'string',
+          county: 'string',
+          postcode: 'string',
+        },
       })
       .expect(201);
 
@@ -70,18 +82,18 @@ describe('UsersController (Integration)', () => {
 
   it('creates a new user with same email should fail', async () => {
     const createUserPayload = {
-      name: "Joe Bloggs",
-      email: "joe@bloggs.com",
-      phoneNumber: "+447912345678",
-      password: "MajorRabbit23!1@",
+      name: 'Joe Bloggs',
+      email: 'joe@bloggs.com',
+      phoneNumber: '+447912345678',
+      password: 'MajorRabbit23!1@',
       address: {
-        line1: "string",
-        line2: "string",
-        line3: "string",
-        town: "string",
-        county: "string",
-        postcode: "string"
-      }
+        line1: 'string',
+        line2: 'string',
+        line3: 'string',
+        town: 'string',
+        county: 'string',
+        postcode: 'string',
+      },
     } as CreateUserRequest;
 
     // Simulate a user creating an account
@@ -101,18 +113,18 @@ describe('UsersController (Integration)', () => {
     await request(app.getHttpServer())
       .post('/users')
       .send({
-        name: "Joe Bloggs",
-        email: "joe@bloggs.com",
-        phoneNumber: "+447912345678",
+        name: 'Joe Bloggs',
+        email: 'joe@bloggs.com',
+        phoneNumber: '+447912345678',
         address: {
-          line1: "string",
-          line2: "string",
-          line3: "string",
-          town: "string",
-          county: "string",
-          postcode: "string"
+          line1: 'string',
+          line2: 'string',
+          line3: 'string',
+          town: 'string',
+          county: 'string',
+          postcode: 'string',
         },
-        sneakyField: "sneaky field!"
+        sneakyField: 'sneaky field!',
       })
       .expect(400);
   });
@@ -121,14 +133,14 @@ describe('UsersController (Integration)', () => {
     await request(app.getHttpServer())
       .post('/users')
       .send({
-        name: "Joe Bloggs",
+        name: 'Joe Bloggs',
         address: {
-          line1: "string",
-          line2: "string",
-          line3: "string",
-          town: "string",
-          county: "string",
-          postcode: "string"
+          line1: 'string',
+          line2: 'string',
+          line3: 'string',
+          town: 'string',
+          county: 'string',
+          postcode: 'string',
         },
       })
       .expect(400);
@@ -176,41 +188,53 @@ describe('UsersController (Integration)', () => {
   it('delete get user should fail with not found found exception user is deleted', async () => {
     const testUser = await createTestUser(module);
 
-    const userRepo = module.get(getRepositoryToken(UserEntity)) as Repository<UserEntity>;
+    const userRepo = module.get(
+      getRepositoryToken(UserEntity),
+    ) as Repository<UserEntity>;
     await userRepo.delete(testUser.id);
 
     const userHandler = new DeleteUserHandler(userRepo);
-    await expect(userHandler.handle({ userId: testUser.uuid })).rejects.toThrow(NotFoundException);
+    await expect(userHandler.handle({ userId: testUser.uuid })).rejects.toThrow(
+      NotFoundException,
+    );
   });
 
   it('get user should fail with not found found exception user is deleted', async () => {
     const testUser = await createTestUser(module);
 
-    const userRepo = module.get(getRepositoryToken(UserEntity)) as Repository<UserEntity>;
+    const userRepo = module.get(
+      getRepositoryToken(UserEntity),
+    ) as Repository<UserEntity>;
     await userRepo.delete(testUser.id);
 
     const userHandler = new GetUserHandler(userRepo);
-    await expect(userHandler.handle({ userId: testUser.uuid })).rejects.toThrow(NotFoundException);
+    await expect(userHandler.handle({ userId: testUser.uuid })).rejects.toThrow(
+      NotFoundException,
+    );
   });
 
   it('patch user should fail with not found found exception user is deleted', async () => {
     const testUser = await createTestUser(module);
 
-    const userRepo = module.get(getRepositoryToken(UserEntity)) as Repository<UserEntity>;
+    const userRepo = module.get(
+      getRepositoryToken(UserEntity),
+    ) as Repository<UserEntity>;
     await userRepo.delete(testUser.id);
 
     const userHandler = new PatchUserHandler(userRepo);
-    await expect(userHandler.handle({
-      userId: testUser.uuid,
-      data: {
-        name: 'New Name',
-        phoneNumber: '+447906924825',
-        address: {
-          ...testUser.address,
-          line1: 'New House'
-        }
-      }
-    })).rejects.toThrow(NotFoundException);
+    await expect(
+      userHandler.handle({
+        userId: testUser.uuid,
+        data: {
+          name: 'New Name',
+          phoneNumber: '+447906924825',
+          address: {
+            ...testUser.address,
+            line1: 'New House',
+          },
+        },
+      }),
+    ).rejects.toThrow(NotFoundException);
   });
 
   it('patches user with specific data', async () => {
@@ -224,16 +248,16 @@ describe('UsersController (Integration)', () => {
       .patch('/users/me')
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
-        name: "Joe Bloggs",
-        phoneNumber: "+447987654321",
+        name: 'Joe Bloggs',
+        phoneNumber: '+447987654321',
         address: {
-          line1: "New Road",
-          line2: "New Place",
-          line3: "New Other Place",
-          town: "Other Town",
-          county: "Other County",
-          postcode: "OT1 1OT"
-        }
+          line1: 'New Road',
+          line2: 'New Place',
+          line3: 'New Other Place',
+          town: 'Other Town',
+          county: 'Other County',
+          postcode: 'OT1 1OT',
+        },
       })
       .expect(200);
 
@@ -253,7 +277,9 @@ describe('UsersController (Integration)', () => {
   it('patches user with specific data', async () => {
     // Simulate a user creating an account
     const testUser = await createTestUser(module);
-    const testUser2 = await createTestUser(module, { email: 'test2@bloggs.com'});
+    const testUser2 = await createTestUser(module, {
+      email: 'test2@bloggs.com',
+    });
     const testUserTokens = await createUserTokens(module, testUser);
     const accessToken = testUserTokens.accessToken;
 
@@ -262,16 +288,16 @@ describe('UsersController (Integration)', () => {
       .patch('/users/me')
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
-        name: "Joe Bloggs",
-        phoneNumber: "+447987654321",
+        name: 'Joe Bloggs',
+        phoneNumber: '+447987654321',
         address: {
-          line1: "New Road",
-          line2: "New Place",
-          line3: "New Other Place",
-          town: "Other Town",
-          county: "Other County",
-          postcode: "OT1 1OT"
-        }
+          line1: 'New Road',
+          line2: 'New Place',
+          line3: 'New Other Place',
+          town: 'Other Town',
+          county: 'Other County',
+          postcode: 'OT1 1OT',
+        },
       })
       .expect(200);
   });

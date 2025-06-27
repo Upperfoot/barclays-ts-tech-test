@@ -1,12 +1,39 @@
 // Controller to handle /accounts endpoints
-import { Controller, Post, Body, Get, Delete, Patch, HttpCode } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiConflictResponse, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { ApiDefaultResponses, BadRequestErrorResponse, ConflictErrorResponse, GuardedApiEndpoints } from '../common/error-responses.decorator';
-import { CreateUserHandler, CreateUserRequest, UserResponse } from './handlers/create.user.handler';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Delete,
+  Patch,
+  HttpCode,
+} from '@nestjs/common';
+import {
+  ApiBadRequestResponse,
+  ApiConflictResponse,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiResponse,
+} from '@nestjs/swagger';
+import {
+  ApiDefaultResponses,
+  BadRequestErrorResponse,
+  ConflictErrorResponse,
+  GuardedApiEndpoints,
+} from '../common/error-responses.decorator';
+import {
+  CreateUserHandler,
+  CreateUserRequest,
+  UserResponse,
+} from './handlers/create.user.handler';
 import { CurrentUser } from '../common/current-user.decorator';
 import { GetUserHandler } from './handlers/get.user.handler';
 import { DeleteUserHandler } from './handlers/delete.user.handler';
-import { PatchUserHandler, PatchUserRequest } from './handlers/patch.user.handler';
+import {
+  PatchUserHandler,
+  PatchUserRequest,
+} from './handlers/patch.user.handler';
 import { UserEntity } from './user.entity';
 
 @ApiDefaultResponses()
@@ -17,16 +44,23 @@ export class UsersController {
     private readonly getUserHandler: GetUserHandler,
     private readonly patchUserHandler: PatchUserHandler,
     private readonly deleteUserHandler: DeleteUserHandler,
-  ) { }
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new user' })
-  @ApiCreatedResponse({ description: 'User has been created successfully', type: UserResponse })
-  @ApiConflictResponse({ description: 'User with email already exists', type: ConflictErrorResponse })
-  @ApiBadRequestResponse({ description: 'Invalid details supplied', type: BadRequestErrorResponse })
-  async createUser(
-    @Body() body: CreateUserRequest
-  ): Promise<UserResponse> {
+  @ApiCreatedResponse({
+    description: 'User has been created successfully',
+    type: UserResponse,
+  })
+  @ApiConflictResponse({
+    description: 'User with email already exists',
+    type: ConflictErrorResponse,
+  })
+  @ApiBadRequestResponse({
+    description: 'Invalid details supplied',
+    type: BadRequestErrorResponse,
+  })
+  async createUser(@Body() body: CreateUserRequest): Promise<UserResponse> {
     return this.createUserHandler.handle(body);
   }
 
@@ -44,7 +78,7 @@ export class UsersController {
   @GuardedApiEndpoints()
   async patchUser(
     @CurrentUser() user: UserEntity,
-    @Body() body: PatchUserRequest
+    @Body() body: PatchUserRequest,
   ): Promise<UserResponse> {
     return this.patchUserHandler.handle({ userId: user.uuid, data: body });
   }

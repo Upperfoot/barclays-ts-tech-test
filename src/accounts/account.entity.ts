@@ -1,53 +1,61 @@
 import { Currency } from '../common/interfaces';
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Index, Generated } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  Index,
+  Generated,
+} from 'typeorm';
 
 export enum AccountType {
-    personal = 'personal',
+  personal = 'personal',
 }
 
-export { Currency }
+export { Currency };
 
 @Index(['accountNumber', 'sortCode'], { unique: true })
 @Index(['userId', 'name'], { unique: true }) // Optional: user can't have two "Savings"
 @Entity('accounts')
 export class AccountEntity {
-    @PrimaryGeneratedColumn('increment')
-    id: number;
+  @PrimaryGeneratedColumn('increment')
+  id: number;
 
-    @Generated('uuid')
-    @Column()
-    uuid: string;
+  @Generated('uuid')
+  @Column()
+  uuid: string;
 
-    @Column()
-    userId: string;
+  @Column()
+  userId: string;
 
-    @Column()
-    name: string;
+  @Column()
+  name: string;
 
-    @Column()
-    accountNumber: string;
+  @Column()
+  accountNumber: string;
 
-    @Column()
-    sortCode: string;
+  @Column()
+  sortCode: string;
 
-    @Column({
-        type: 'text',
-        enum: AccountType
-    })
-    accountType: AccountType;
+  @Column({
+    type: 'text',
+    enum: AccountType,
+  })
+  accountType: AccountType;
 
-    @Column({ default: 0 })
-    balance: number;
+  @Column({ default: 0 })
+  balance: number;
 
-    @Column({
-        type: 'text',
-        enum: Currency
-    })
-    currency: Currency;
+  @Column({
+    type: 'text',
+    enum: Currency,
+  })
+  currency: Currency;
 
-    @CreateDateColumn()
-    createdTimestamp: Date;
+  @CreateDateColumn()
+  createdTimestamp: Date;
 
-    @UpdateDateColumn()
-    updatedTimestamp: Date;
+  @UpdateDateColumn()
+  updatedTimestamp: Date;
 }

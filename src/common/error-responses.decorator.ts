@@ -1,5 +1,11 @@
 import { applyDecorators, UseGuards } from '@nestjs/common';
-import { ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiProperty, ApiSecurity, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import {
+  ApiForbiddenResponse,
+  ApiInternalServerErrorResponse,
+  ApiProperty,
+  ApiSecurity,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { JwtGuard } from '../auth/jwt.guard';
 
 export interface ErrorResponse {
@@ -30,7 +36,7 @@ export class BadRequestErrorResponse {
   message: string[];
 
   @ApiProperty({ type: [ValidationDetail] })
-  details: ValidationDetail[]
+  details: ValidationDetail[];
 }
 
 class UnauthorisedErrorResponse {
@@ -101,15 +107,21 @@ export class NotFoundErrorResponse {
 
 export function ApiDefaultResponses() {
   return applyDecorators(
-    ApiUnauthorizedResponse({ description: 'Access token is missing or invalid', type: UnauthorisedErrorResponse }),
-    ApiForbiddenResponse({ description: 'The user is not allowed to access this resource', type: ForbiddenErrorResponse }),
-    ApiInternalServerErrorResponse({ description: 'An unexpected error occurred', type: InternalServerErrorResponse }),
+    ApiUnauthorizedResponse({
+      description: 'Access token is missing or invalid',
+      type: UnauthorisedErrorResponse,
+    }),
+    ApiForbiddenResponse({
+      description: 'The user is not allowed to access this resource',
+      type: ForbiddenErrorResponse,
+    }),
+    ApiInternalServerErrorResponse({
+      description: 'An unexpected error occurred',
+      type: InternalServerErrorResponse,
+    }),
   );
 }
 
 export function GuardedApiEndpoints() {
-  return applyDecorators(
-      ApiSecurity('bearerAuth'),
-      UseGuards(JwtGuard)
-  )
+  return applyDecorators(ApiSecurity('bearerAuth'), UseGuards(JwtGuard));
 }

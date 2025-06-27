@@ -7,7 +7,11 @@ import { AccountType, Currency } from './account.entity';
 import { typeOrmConfig } from '../app.module';
 import { setupApp } from '../common/app.setup';
 import { AuthModule } from '../auth/auth.module';
-import { clearTables, createTestUser, createUserTokens } from '../common/auth-test-helper';
+import {
+  clearTables,
+  createTestUser,
+  createUserTokens,
+} from '../common/auth-test-helper';
 import * as RandomUtils from '../common/helpers';
 
 describe('AccountsController (Integration)', () => {
@@ -18,7 +22,11 @@ describe('AccountsController (Integration)', () => {
   beforeAll(async () => {
     module = await Test.createTestingModule({
       imports: [
-        TypeOrmModule.forRoot({ ...typeOrmConfig, database: ':memory:', dropSchema: true } as TypeOrmModuleOptions),
+        TypeOrmModule.forRoot({
+          ...typeOrmConfig,
+          database: ':memory:',
+          dropSchema: true,
+        } as TypeOrmModuleOptions),
         AuthModule,
         AccountsModule,
       ],
@@ -42,7 +50,7 @@ describe('AccountsController (Integration)', () => {
     const testUserTokens = await createUserTokens(module, testUser);
 
     accessToken = testUserTokens.accessToken;
-  })
+  });
 
   it('creates and retrieves an account', async () => {
     // Simulate a user creating an account
@@ -52,7 +60,7 @@ describe('AccountsController (Integration)', () => {
       .send({
         name: 'My Test Account',
         accountType: AccountType.personal,
-        currency: Currency.GBP
+        currency: Currency.GBP,
       })
       .expect(201);
 
@@ -80,7 +88,7 @@ describe('AccountsController (Integration)', () => {
         name: 'Hacker Account',
         accountType: AccountType.personal,
         userId: 'someone-else',
-        sneakyField: 'very-very-sneaky!' // unexpected field
+        sneakyField: 'very-very-sneaky!', // unexpected field
       })
       .expect(400);
   });
@@ -93,7 +101,7 @@ describe('AccountsController (Integration)', () => {
         name: 'Hacker Account',
         accountType: AccountType.personal,
         userId: 'someone-else',
-        sneakyField: 'very-very-sneaky!' // unexpected field
+        sneakyField: 'very-very-sneaky!', // unexpected field
       })
       .expect(401);
   });
@@ -106,7 +114,7 @@ describe('AccountsController (Integration)', () => {
       .send({
         name: 'My Test Account',
         accountType: AccountType.personal,
-        currency: Currency.GBP
+        currency: Currency.GBP,
       })
       .expect(201);
 
@@ -120,7 +128,7 @@ describe('AccountsController (Integration)', () => {
       .send({
         name: 'My Test Account',
         accountType: AccountType.personal,
-        currency: Currency.GBP
+        currency: Currency.GBP,
       })
       .expect(409);
   });
@@ -133,7 +141,7 @@ describe('AccountsController (Integration)', () => {
       .send({
         name: 'My Test Account',
         accountType: AccountType.personal,
-        currency: Currency.GBP
+        currency: Currency.GBP,
       })
       .expect(201);
 
@@ -154,7 +162,7 @@ describe('AccountsController (Integration)', () => {
       .delete(`/accounts/307c5efb-e84a-48d8-81ed-d73c76ebf7a1`)
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(404);
-  })
+  });
 
   it('updates an existing account', async () => {
     // Simulate a user creating an account
@@ -164,7 +172,7 @@ describe('AccountsController (Integration)', () => {
       .send({
         name: 'My Test Account',
         accountType: AccountType.personal,
-        currency: Currency.GBP
+        currency: Currency.GBP,
       })
       .expect(201);
 
@@ -179,7 +187,7 @@ describe('AccountsController (Integration)', () => {
       .send({
         name: 'My Test Account Updated',
         accountType: AccountType.personal,
-        currency: Currency.GBP
+        currency: Currency.GBP,
       })
       .expect(200);
 
@@ -196,7 +204,7 @@ describe('AccountsController (Integration)', () => {
       .send({
         name: 'My Test Account',
         accountType: AccountType.personal,
-        currency: Currency.GBP
+        currency: Currency.GBP,
       })
       .expect(201);
 
@@ -211,7 +219,7 @@ describe('AccountsController (Integration)', () => {
       .send({
         name: 'My Test Account Updated',
         accountType: AccountType.personal,
-        currency: Currency.GBP
+        currency: Currency.GBP,
       })
       .expect(404);
   });
@@ -224,7 +232,7 @@ describe('AccountsController (Integration)', () => {
       .send({
         name: 'My Test Account',
         accountType: AccountType.personal,
-        currency: Currency.GBP
+        currency: Currency.GBP,
       })
       .expect(201);
 
@@ -239,7 +247,7 @@ describe('AccountsController (Integration)', () => {
       .send({
         name: 'My Test Account 2',
         accountType: AccountType.personal,
-        currency: Currency.GBP
+        currency: Currency.GBP,
       })
       .expect(201);
 
@@ -248,28 +256,29 @@ describe('AccountsController (Integration)', () => {
     expect(createRes2.body.accountType).toBe(AccountType.personal);
 
     // Should fail due to name already existing
-     await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .patch(`/accounts/${createRes.body.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         name: 'My Test Account 2',
         accountType: AccountType.personal,
-        currency: Currency.GBP
+        currency: Currency.GBP,
       })
       .expect(409);
   });
 
-
   it('create should fail with conflict due to account + sort already existing', async () => {
-    jest.spyOn(RandomUtils, 'randomDigitString').mockImplementation((number) => {
-      if(number === 8) {
-        return '12345678';
-      } else if (number === 6) {
-        return '123456'
-      } else {
-        return '';
-      }
-    });
+    jest
+      .spyOn(RandomUtils, 'randomDigitString')
+      .mockImplementation((number) => {
+        if (number === 8) {
+          return '12345678';
+        } else if (number === 6) {
+          return '123456';
+        } else {
+          return '';
+        }
+      });
 
     // Simulate a user creating an account
     const createRes = await request(app.getHttpServer())
@@ -278,7 +287,7 @@ describe('AccountsController (Integration)', () => {
       .send({
         name: 'My Test Account',
         accountType: AccountType.personal,
-        currency: Currency.GBP
+        currency: Currency.GBP,
       })
       .expect(201);
 
@@ -293,7 +302,7 @@ describe('AccountsController (Integration)', () => {
       .send({
         name: 'My Test Account 2',
         accountType: AccountType.personal,
-        currency: Currency.GBP
+        currency: Currency.GBP,
       })
       .expect(409);
   });

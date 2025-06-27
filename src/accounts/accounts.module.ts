@@ -10,6 +10,11 @@ import { DeleteAccountHandler } from './handlers/delete.account.handler';
 @Module({
   imports: [TypeOrmModule.forFeature([AccountEntity])],
   controllers: [AccountsController],
-  providers: [CreateAccountHandler, ListAccountHandler, PatchAccountHandler, DeleteAccountHandler],
+  providers: [
+    CreateAccountHandler,
+    ListAccountHandler,
+    PatchAccountHandler,
+    DeleteAccountHandler,
+  ],
 })
 export class AccountsModule {}

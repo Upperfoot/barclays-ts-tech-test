@@ -1,10 +1,10 @@
 export interface RequestHandler {
-    handle(request: unknown): Promise<unknown>; 
+  handle(request: unknown): Promise<unknown>;
 }
 
-export type AuthenticatedRequest = { userId: string }
+export type AuthenticatedRequest = { userId: string };
 
 export enum Currency {
-    GBP = 'GBP',
-    USD = 'USD'
+  GBP = 'GBP',
+  USD = 'USD',
 }

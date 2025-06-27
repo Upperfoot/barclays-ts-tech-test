@@ -1,4 +1,3 @@
-
 import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
@@ -9,25 +8,28 @@ import { UserEntity } from '../users/user.entity';
 export class AuthService {
   constructor(
     private usersService: UsersService,
-    private jwtService: JwtService
-  ) { }
+    private jwtService: JwtService,
+  ) {}
 
   async getUser(userUuid: string) {
     return await this.usersService.findOne({
-      uuid: userUuid
+      uuid: userUuid,
     });
   }
 
-  async retrieveUserByCredentials(email: string, password: string): Promise<any> {
+  async retrieveUserByCredentials(
+    email: string,
+    password: string,
+  ): Promise<any> {
     const user = await this.usersService.findOne({
-      email
+      email,
     });
 
     if (!user) {
       return null;
     }
 
-    const validPassword = await bcrypt.compare(password, user.password)
+    const validPassword = await bcrypt.compare(password, user.password);
 
     if (!validPassword) {
       return null;

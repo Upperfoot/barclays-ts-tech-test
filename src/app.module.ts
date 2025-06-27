@@ -1,5 +1,3 @@
-
-
 import { Module } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { AccountsModule } from './accounts/accounts.module';
@@ -13,7 +11,7 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
   entities: [__dirname + '**/*.entity.ts'],
   synchronize: true,
   autoLoadEntities: true,
-}
+};
 
 @Module({
   imports: [

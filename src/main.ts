@@ -8,13 +8,15 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Take home tech task')
-    .setDescription('We want you to create a REST API for Eagle Bank which conforms to this OpenAPI specification which allows a user to create, fetch, update and delete a bank account and deposit or withdraw money from the account. These will be stored as transactions against a bank account which be retrieved but not modified or deleted.')
+    .setDescription(
+      'We want you to create a REST API for Eagle Bank which conforms to this OpenAPI specification which allows a user to create, fetch, update and delete a bank account and deposit or withdraw money from the account. These will be stored as transactions against a bank account which be retrieved but not modified or deleted.',
+    )
     .setVersion('1.0')
     .addSecurity('bearerAuth', {
       type: 'http',
       scheme: 'bearer',
       bearerFormat: 'JWT',
-      description: 'Bearer Token in JWT format'
+      description: 'Bearer Token in JWT format',
     })
     .build();
 

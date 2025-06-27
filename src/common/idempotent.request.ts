@@ -1,5 +1,13 @@
-import { applyDecorators, BadRequestException, CanActivate, createParamDecorator, ExecutionContext, Injectable, UseGuards } from "@nestjs/common";
-import { ApiHeader } from "@nestjs/swagger";
+import {
+  applyDecorators,
+  BadRequestException,
+  CanActivate,
+  createParamDecorator,
+  ExecutionContext,
+  Injectable,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiHeader } from '@nestjs/swagger';
 
 const IDEMPOTENCY_HEADER_KEY = 'Idempotency-Key';
 
@@ -7,7 +15,8 @@ const IDEMPOTENCY_HEADER_KEY = 'Idempotency-Key';
 export class IdempotencyKeyGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();
-    const idempotencyKey = request.headers[IDEMPOTENCY_HEADER_KEY.toLowerCase()];
+    const idempotencyKey =
+      request.headers[IDEMPOTENCY_HEADER_KEY.toLowerCase()];
 
     const uuidRegex =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -27,22 +36,23 @@ export class IdempotencyKeyGuard implements CanActivate {
 }
 
 export function applyIdempotencyHeader() {
-    return applyDecorators(
-        ApiHeader({
-            name: IDEMPOTENCY_HEADER_KEY,
-            description: 'A unique key to ensure the request is idempotent, must be in uuid format',
-            required: true,
-            schema: { type: 'string' },
-        }),
-        UseGuards(IdempotencyKeyGuard)
-    );
+  return applyDecorators(
+    ApiHeader({
+      name: IDEMPOTENCY_HEADER_KEY,
+      description:
+        'A unique key to ensure the request is idempotent, must be in uuid format',
+      required: true,
+      schema: { type: 'string' },
+    }),
+    UseGuards(IdempotencyKeyGuard),
+  );
 }
 
 export const GetIdempotencyKey = createParamDecorator(
-    (_data: unknown, ctx: ExecutionContext) => {
-        const request = ctx.switchToHttp().getRequest();
-        return request.idempotencyKey;
-    },
+  (_data: unknown, ctx: ExecutionContext) => {
+    const request = ctx.switchToHttp().getRequest();
+    return request.idempotencyKey;
+  },
 );
 
 export type IdempotentRequest = { idempotencyKey: string };

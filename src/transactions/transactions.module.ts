@@ -11,6 +11,11 @@ import { ProcessTransactionHandler } from './handlers/process.transaction.handle
 @Module({
   imports: [TypeOrmModule.forFeature([TransactionEntity, AccountEntity])],
   controllers: [TransactionsController],
-  providers: [CreateTransactionHandler, ListTransactionHandler, GetTransactionHandler, ProcessTransactionHandler],
+  providers: [
+    CreateTransactionHandler,
+    ListTransactionHandler,
+    GetTransactionHandler,
+    ProcessTransactionHandler,
+  ],
 })
 export class TransactionsModule {}

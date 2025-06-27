@@ -1,9 +1,8 @@
-import { INestApplication, ValidationPipe } from "@nestjs/common";
-import { ValidationFilter } from "./validation.filter";
-
+import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { ValidationFilter } from './validation.filter';
 
 export function setupApp(app: INestApplication<any>) {
-    app.useGlobalPipes(
+  app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,

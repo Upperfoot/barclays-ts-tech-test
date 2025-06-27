@@ -11,7 +11,13 @@ import { DeleteUserHandler } from './handlers/delete.user.handler';
 @Module({
   imports: [TypeOrmModule.forFeature([UserEntity])],
   controllers: [UsersController],
-  providers: [UsersService, CreateUserHandler, GetUserHandler, PatchUserHandler, DeleteUserHandler],
-  exports: [UsersService]
+  providers: [
+    UsersService,
+    CreateUserHandler,
+    GetUserHandler,
+    PatchUserHandler,
+    DeleteUserHandler,
+  ],
+  exports: [UsersService],
 })
 export class UsersModule {}
