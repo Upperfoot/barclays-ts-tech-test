@@ -29,13 +29,7 @@ export class BadRequestErrorResponse {
   @ApiProperty({ example: 'Validation failed' })
   message: string[];
 
-  @ApiProperty({ example: [
-    {
-      field: "name",
-      message: "name must be a string",
-      type: "ValidationError"
-    }
-  ], type: [ValidationDetail] })
+  @ApiProperty({ type: [ValidationDetail] })
   details: ValidationDetail[]
 }
 
@@ -80,6 +74,28 @@ export class ConflictErrorResponse {
   error: string;
 
   @ApiProperty({ example: 'Name must be unique' })
+  message: string;
+}
+
+export class UnprocessableEntityErrorResponse {
+  @ApiProperty({ example: 422 })
+  statusCode: number;
+
+  @ApiProperty()
+  error: string;
+
+  @ApiProperty()
+  message: string;
+}
+
+export class NotFoundErrorResponse {
+  @ApiProperty({ example: 404 })
+  statusCode: number;
+
+  @ApiProperty({ example: 'Not Found' })
+  error: string;
+
+  @ApiProperty({ example: 'Resource not found' })
   message: string;
 }
 

@@ -1,7 +1,7 @@
 // Controller to handle /accounts endpoints
 import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
-import { ApiDefaultResponses, BadRequestErrorResponse, GuardedApiEndpoints } from '../common/error-responses.decorator';
-import { ApiBadRequestResponse, ApiCreatedResponse, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiDefaultResponses, BadRequestErrorResponse, GuardedApiEndpoints, NotFoundErrorResponse, UnprocessableEntityErrorResponse } from '../common/error-responses.decorator';
+import { ApiBadRequestResponse, ApiCreatedResponse, ApiNotFoundResponse, ApiOperation, ApiResponse, ApiUnauthorizedResponse, ApiUnprocessableEntityResponse } from '@nestjs/swagger';
 import { CurrentUser } from '../common/current-user.decorator';
 import { CreateTransactionHandler, CreateTransactionRequest, TransactionResponse } from './handlers/create.transaction.handler';
 import { ListTransactionHandler, ListTransactionResponse } from './handlers/list.transaction.handler';
@@ -22,6 +22,8 @@ export class TransactionsController {
   @Post()
   @ApiOperation({ summary: 'Create a new transaction for an authenticated user against an account' })
   @ApiBadRequestResponse({ description: 'Invalid details supplied', type: BadRequestErrorResponse })
+  @ApiUnprocessableEntityResponse({ description: 'Insufficient funds to process transaction', type: UnprocessableEntityErrorResponse })
+  @ApiNotFoundResponse({ description: 'Bank account not found', type: NotFoundErrorResponse })
   @ApiCreatedResponse({ description: 'List of accounts', type: TransactionResponse })
   async createTransaction(
     @CurrentUser() user: UserEntity,
