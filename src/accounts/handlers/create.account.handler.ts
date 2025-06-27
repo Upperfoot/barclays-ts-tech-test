@@ -5,6 +5,7 @@ import { QueryFailedError, Repository } from "typeorm";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEnum, IsString } from "class-validator";
 import { AuthenticatedRequest, RequestHandler } from '../../common/interfaces';
+import { randomDigitString } from "../../common/helpers";
 
 export class CreateAccountRequest {
     @ApiProperty({
@@ -79,14 +80,6 @@ export class AccountResponse {
     updatedTimestamp: Date;
 }
 
-export function randomDigitString(length: number): string {
-    let result = '';
-    for (let i = 0; i < length; i++) {
-        result += Math.floor(Math.random() * 10).toString();
-    }
-    return result;
-}
-
 export function mapAccountEntity(accountEntity: AccountEntity): AccountResponse {
     return {
         id: accountEntity.uuid,
@@ -152,12 +145,11 @@ export class CreateAccountHandler implements RequestHandler {
                     err instanceof QueryFailedError &&
                     /UNIQUE constraint failed: accounts.accountNumber, accounts.sortCode/.test((err as any).message);
 
-                if (!isAccountNumberUniqueViolation) throw err; // rethrow other DB errors
-
-                if (attempt === 4) {
+                if (isAccountNumberUniqueViolation && attempt >= 4) {
                     throw new ConflictException('Unable to generate unique account number');
                 }
-                // else: retry
+
+                if (!isAccountNumberUniqueViolation) throw err; // rethrow other DB errors
             }
         }
 

@@ -122,11 +122,11 @@ export class CreateUserHandler implements RequestHandler {
             });
             return mapUser(savedUser);
         } catch (err) {
-            const isAccountNameUniqueViolation =
+            const isUserEmailUniqueViolation =
                 err instanceof QueryFailedError &&
                 /UNIQUE constraint failed: users.email/.test((err as any).message);
 
-            if (isAccountNameUniqueViolation) {
+            if (isUserEmailUniqueViolation) {
                 throw new ConflictException('Name must be unique');
             }
 

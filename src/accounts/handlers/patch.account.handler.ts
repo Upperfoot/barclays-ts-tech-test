@@ -64,7 +64,7 @@ export class PatchAccountHandler implements RequestHandler {
                 throw new ConflictException('Name must be unique');
             }
 
-            throw err; // rethrow other DB errors
+            throw err;
         }
     }
 }

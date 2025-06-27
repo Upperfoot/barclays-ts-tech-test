@@ -1,12 +1,13 @@
 import { InjectRepository } from "@nestjs/typeorm";
 import { TransactionEntity } from "../transaction.entity";
 import { AccountEntity } from "../../accounts/account.entity";
-import { Repository } from "typeorm";
+import { DataSource, Repository } from "typeorm";
 import { NotFoundException } from "@nestjs/common";
 
 export class TransactionHandler {
 
     constructor(
+        protected readonly dataSource: DataSource,
         @InjectRepository(TransactionEntity)
         protected readonly transactionRepo: Repository<TransactionEntity>,
         @InjectRepository(AccountEntity)

@@ -46,25 +46,13 @@ export class PatchUserHandler implements RequestHandler {
             throw new NotFoundException('User not found');
         }
 
-        try {
-            const savedUser = await this.repo.save({
-                id: user.id,
-                name: request.data.name,
-                phoneNumber: request.data.phoneNumber,
-                address: request.data.address
-            });
+        const savedUser = await this.repo.save({
+            id: user.id,
+            name: request.data.name,
+            phoneNumber: request.data.phoneNumber,
+            address: request.data.address
+        });
 
-            return mapUser({ ...user, ...savedUser });
-        } catch (err) {
-            const isAccountNameUniqueViolation =
-                err instanceof QueryFailedError &&
-                /UNIQUE constraint failed: users.email/.test((err as any).message);
-
-            if (isAccountNameUniqueViolation) {
-                throw new ConflictException('Name must be unique');
-            }
-
-            throw err;
-        }
+        return mapUser({ ...user, ...savedUser });
     }
 }

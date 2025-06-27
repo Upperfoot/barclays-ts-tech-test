@@ -8,6 +8,7 @@ import { typeOrmConfig } from '../app.module';
 import { setupApp } from '../common/app.setup';
 import { AuthModule } from '../auth/auth.module';
 import { clearTables, createTestUser, createUserTokens } from '../common/auth-test-helper';
+import * as RandomUtils from '../common/helpers';
 
 describe('AccountsController (Integration)', () => {
   let app: INestApplication;
@@ -147,6 +148,14 @@ describe('AccountsController (Integration)', () => {
       .expect(204);
   });
 
+  it('attempt to delete invalid account', async () => {
+    // Retrieve accounts for user
+    await request(app.getHttpServer())
+      .delete(`/accounts/307c5efb-e84a-48d8-81ed-d73c76ebf7a1`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(404);
+  })
+
   it('updates an existing account', async () => {
     // Simulate a user creating an account
     const createRes = await request(app.getHttpServer())
@@ -207,7 +216,6 @@ describe('AccountsController (Integration)', () => {
       .expect(404);
   });
 
-
   it('patch should fail with conflict due to name already existing', async () => {
     // Simulate a user creating an account
     const createRes = await request(app.getHttpServer())
@@ -242,6 +250,45 @@ describe('AccountsController (Integration)', () => {
     // Should fail due to name already existing
      await request(app.getHttpServer())
       .patch(`/accounts/${createRes.body.id}`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({
+        name: 'My Test Account 2',
+        accountType: AccountType.personal,
+        currency: Currency.GBP
+      })
+      .expect(409);
+  });
+
+
+  it('create should fail with conflict due to account + sort already existing', async () => {
+    jest.spyOn(RandomUtils, 'randomDigitString').mockImplementation((number) => {
+      if(number === 8) {
+        return '12345678';
+      } else if (number === 6) {
+        return '123456'
+      } else {
+        return '';
+      }
+    });
+
+    // Simulate a user creating an account
+    const createRes = await request(app.getHttpServer())
+      .post('/accounts')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({
+        name: 'My Test Account',
+        accountType: AccountType.personal,
+        currency: Currency.GBP
+      })
+      .expect(201);
+
+    expect(createRes.body).toHaveProperty('id');
+    expect(createRes.body.name).toBe('My Test Account');
+    expect(createRes.body.accountType).toBe(AccountType.personal);
+
+    // Simulate a user creating an account, should fail due to account number and sort code being the same
+    const createRes2 = await request(app.getHttpServer())
+      .post('/accounts')
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         name: 'My Test Account 2',

@@ -1,9 +1,10 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, ForbiddenException, Injectable } from "@nestjs/common";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEnum, IsInt, IsString } from "class-validator";
 import { AuthenticatedRequest, Currency } from '../../common/interfaces';
 import { TransactionEntity, TransactionStatus, TransactionType } from "../transaction.entity";
 import { TransactionHandler } from "./transaction.handler";
+import { ProcessTransactionHandler } from "./process.transaction.handler";
 
 export class CreateTransactionRequest {
     @ApiProperty({
@@ -12,7 +13,7 @@ export class CreateTransactionRequest {
     })
     @IsInt()
     amount: number;
-    
+
     @ApiProperty({
         enum: TransactionType,
         example: TransactionType.deposit
@@ -114,11 +115,11 @@ export class CreateTransactionHandler extends TransactionHandler {
     async handle(request: AuthenticatedCreateRequest): Promise<TransactionResponse> {
         const account = await this.getAccount(request.userId, request.accountId);
 
-        if(account.currency !== request.data.currency) {
+        if (account.currency !== request.data.currency) {
             throw new BadRequestException(`Currency must be equal to Account Currency: ${account.currency}`)
         }
 
-        const entity = await this.transactionRepo.save({
+        const transaction = await this.transactionRepo.save({
             userId: request.userId,
             accountId: account.uuid,
             amount: request.data.amount,
@@ -128,9 +129,12 @@ export class CreateTransactionHandler extends TransactionHandler {
             currency: request.data.currency
         });
 
-        // This would be processed OOB
-
-        return mapTransactionEntity(entity);
+        // This would be processed OOB normally for Financial Institutions
+        //  but for this current spec (422 Unprocessable) we need to return it inline
+        // Improvement of this would be to change it to be OOB/Async completely with Queue's/Workers/Jobs/Crons
+        const processTransactionHandler = new ProcessTransactionHandler(this.dataSource, this.transactionRepo, this.accountRepo);
+        await processTransactionHandler.handle({ transactionId: transaction.uuid });
+        return mapTransactionEntity(transaction);
     }
 
 

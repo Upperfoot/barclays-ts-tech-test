@@ -6,4 +6,5 @@ export type AuthenticatedRequest = { userId: string }
 
 export enum Currency {
     GBP = 'GBP',
+    USD = 'USD'
 }

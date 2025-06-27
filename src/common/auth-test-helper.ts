@@ -5,9 +5,10 @@ import { Repository } from "typeorm";
 import * as bcrypt from 'bcrypt';
 import { AuthService } from "../auth/auth.service";
 import { AccountEntity, AccountType, Currency } from "../accounts/account.entity";
-import { randomDigitString } from "../accounts/handlers/create.account.handler";
+import { TransactionEntity } from "../transactions/transaction.entity";
+import { randomDigitString } from "./helpers";
 
-export async function createTestUser(module: TestingModule): Promise<UserEntity> {
+export async function createTestUser(module: TestingModule, override: Partial<UserEntity> = {}): Promise<UserEntity> {
     const userRepo = module.get(getRepositoryToken(UserEntity)) as Repository<UserEntity>;
 
     return await userRepo.save({
@@ -23,13 +24,14 @@ export async function createTestUser(module: TestingModule): Promise<UserEntity>
             postcode: 'R1 3RR'
         } as AddressEntity,
         password: await bcrypt.hash('Password123!', 10),
+        ...override
     });
 }
 
 export async function createTestAccount(module: TestingModule, userId: string, name: string): Promise<AccountEntity> {
-    const userRepo = module.get(getRepositoryToken(AccountEntity)) as Repository<AccountEntity>;
+    const accountRepo = module.get(getRepositoryToken(AccountEntity)) as Repository<AccountEntity>;
 
-    return await userRepo.save({
+    return await accountRepo.save({
         userId,
         accountType: AccountType.personal,
         currency: Currency.GBP,
@@ -53,6 +55,14 @@ export async function clearTables(module: TestingModule) {
 
         if (accountsRepo) {
             accountsRepo.deleteAll();
+        }
+    } catch { }
+
+    try {
+        const transactionsRepo = module.get(getRepositoryToken(TransactionEntity)) as Repository<TransactionEntity>;
+
+        if (transactionsRepo) {
+            transactionsRepo.deleteAll();
         }
     } catch { }
 }

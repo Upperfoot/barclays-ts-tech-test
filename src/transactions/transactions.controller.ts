@@ -20,7 +20,7 @@ export class TransactionsController {
 
 
   @Post()
-  @ApiOperation({ summary: 'Create a new bank account for the authenticated user' })
+  @ApiOperation({ summary: 'Create a new transaction for an authenticated user against an account' })
   @ApiBadRequestResponse({ description: 'Invalid details supplied', type: BadRequestErrorResponse })
   @ApiCreatedResponse({ description: 'List of accounts', type: TransactionResponse })
   async createTransaction(
@@ -36,7 +36,7 @@ export class TransactionsController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Fetch all accounts for a given user' })
+  @ApiOperation({ summary: 'Fetch all transactions for a given user against a specific account' })
   @ApiResponse({ status: 200, description: 'List of accounts', type: [ListTransactionResponse] })
   async listTransactions(
     @CurrentUser() user: UserEntity,
@@ -46,7 +46,7 @@ export class TransactionsController {
   }
 
   @Get(':transactionId')
-  @ApiOperation({ summary: 'Fetch all accounts for a given user' })
+  @ApiOperation({ summary: 'Fetch transaction by its id' })
   @ApiResponse({ status: 200, description: 'List of accounts', type: TransactionResponse })
   async getTransaction(
     @CurrentUser() user: UserEntity,
