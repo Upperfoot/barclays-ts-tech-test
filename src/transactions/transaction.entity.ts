@@ -14,6 +14,7 @@ export enum TransactionType {
 
 export { Currency }
 
+@Index(['userId', 'accountId', 'idempotencyKey'], { unique: true })
 @Entity('transactions')
 export class TransactionEntity {
     @PrimaryGeneratedColumn('increment')
@@ -52,6 +53,9 @@ export class TransactionEntity {
 
     @Column()
     reference: string;
+
+    @Column()
+    idempotencyKey: string;
 
     @CreateDateColumn()
     createdTimestamp: Date;

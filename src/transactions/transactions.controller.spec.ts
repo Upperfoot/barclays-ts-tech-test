@@ -48,7 +48,7 @@ describe('TransactionsController (Integration)', () => {
 
     accessToken = testUserTokens.accessToken;
     userId = testUser.uuid;
-  })
+  });
 
   it('creates a transaction', async () => {
     // Simulate a user creating an account
@@ -57,6 +57,7 @@ describe('TransactionsController (Integration)', () => {
     const createRes = await request(app.getHttpServer())
       .post(`/accounts/${account.uuid}/transactions`)
       .set('Authorization', `Bearer ${accessToken}`)
+      .set('Idempotency-Key', crypto.randomUUID())
       .send({
         type: TransactionType.deposit,
         currency: Currency.GBP,
@@ -77,6 +78,46 @@ describe('TransactionsController (Integration)', () => {
     expect(createRes.body).toHaveProperty('updatedTimestamp');
   });
 
+  it('creates a transaction and retries with same idempotent key', async () => {
+    // Simulate a user creating an account
+    const account = await createTestAccount(module, userId, 'Test Account 1')
+    const idempotentKey = crypto.randomUUID();
+    const createRes = await request(app.getHttpServer())
+      .post(`/accounts/${account.uuid}/transactions`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Idempotency-Key', idempotentKey)
+      .send({
+        type: TransactionType.deposit,
+        currency: Currency.GBP,
+        amount: 100,
+        reference: 'New Deposit Transaction'
+      } as CreateTransactionRequest)
+      .expect(201);
+
+    const retryRes = await request(app.getHttpServer())
+      .post(`/accounts/${account.uuid}/transactions`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Idempotency-Key', idempotentKey)
+      .send({
+        type: TransactionType.deposit,
+        currency: Currency.GBP,
+        amount: 100,
+        reference: 'New Deposit Transaction'
+      } as CreateTransactionRequest)
+      .expect(201);
+
+    expect(retryRes.body).toHaveProperty('id');
+    expect(retryRes.body.id).toBe(createRes.body.id);
+    expect(retryRes.body.accountId).toBe(account.uuid);
+    expect(retryRes.body.userId).toBe(userId);
+    expect(retryRes.body.type).toBe(TransactionType.deposit);
+    expect(retryRes.body.amount).toBe(100);
+    expect(retryRes.body.currency).toBe(Currency.GBP);
+    expect(retryRes.body.reference).toBe('New Deposit Transaction');
+    expect(retryRes.body).toHaveProperty('createdTimestamp');
+    expect(retryRes.body).toHaveProperty('updatedTimestamp');
+  });
+
   it('retrieving a transaction that does not exist should return not found', async () => {
     // Simulate a user creating an account
     const account = await createTestAccount(module, userId, 'Test Account 1')
@@ -94,6 +135,7 @@ describe('TransactionsController (Integration)', () => {
     await request(app.getHttpServer())
       .post(`/accounts/random-bad-id/transactions`)
       .set('Authorization', `Bearer ${accessToken}`)
+      .set('Idempotency-Key', crypto.randomUUID())
       .send({
         type: TransactionType.deposit,
         currency: Currency.GBP,
@@ -111,6 +153,7 @@ describe('TransactionsController (Integration)', () => {
     await request(app.getHttpServer())
       .post(`/accounts/${differentUserAccount.uuid}/transactions`)
       .set('Authorization', `Bearer ${accessToken}`)
+      .set('Idempotency-Key', crypto.randomUUID())
       .send({
         type: TransactionType.deposit,
         currency: Currency.GBP,
@@ -127,6 +170,7 @@ describe('TransactionsController (Integration)', () => {
     const createRes = await request(app.getHttpServer())
       .post(`/accounts/${account.uuid}/transactions`)
       .set('Authorization', `Bearer ${accessToken}`)
+      .set('Idempotency-Key', crypto.randomUUID())
       .send({
         type: TransactionType.deposit,
         currency: Currency.GBP,
@@ -176,6 +220,7 @@ describe('TransactionsController (Integration)', () => {
     await request(app.getHttpServer())
       .post(`/accounts/${account.uuid}/transactions`)
       .set('Authorization', `Bearer ${accessToken}`)
+      .set('Idempotency-Key', crypto.randomUUID())
       .send({
         type: TransactionType.deposit,
         currency: Currency.USD,
@@ -201,16 +246,19 @@ describe('TransactionsController (Integration)', () => {
       request(app.getHttpServer())
         .post(`/accounts/${account.uuid}/transactions`)
         .set('Authorization', `Bearer ${accessToken}`)
+        .set('Idempotency-Key', crypto.randomUUID())
         .send(transactionPayload),
 
       request(app.getHttpServer())
         .post(`/accounts/${account.uuid}/transactions`)
         .set('Authorization', `Bearer ${accessToken}`)
+        .set('Idempotency-Key', crypto.randomUUID())
         .send(transactionPayload),
 
       request(app.getHttpServer())
         .post(`/accounts/${account.uuid}/transactions`)
         .set('Authorization', `Bearer ${accessToken}`)
+        .set('Idempotency-Key', crypto.randomUUID())
         .send(transactionPayload)
     ]);
 
@@ -254,16 +302,19 @@ describe('TransactionsController (Integration)', () => {
       request(app.getHttpServer())
         .post(`/accounts/${account.uuid}/transactions`)
         .set('Authorization', `Bearer ${accessToken}`)
+        .set('Idempotency-Key', crypto.randomUUID())
         .send(transactionDepositPayload),
 
       request(app.getHttpServer())
         .post(`/accounts/${account.uuid}/transactions`)
         .set('Authorization', `Bearer ${accessToken}`)
+        .set('Idempotency-Key', crypto.randomUUID())
         .send(transactionWithdrawalPayload),
 
       request(app.getHttpServer())
         .post(`/accounts/${account.uuid}/transactions`)
         .set('Authorization', `Bearer ${accessToken}`)
+        .set('Idempotency-Key', crypto.randomUUID())
         .send(transactionWithdrawalPayload)
     ]);
 
@@ -306,16 +357,19 @@ describe('TransactionsController (Integration)', () => {
       request(app.getHttpServer())
         .post(`/accounts/${account.uuid}/transactions`)
         .set('Authorization', `Bearer ${accessToken}`)
+        .set('Idempotency-Key', crypto.randomUUID())
         .send(transactionDepositPayload),
 
       request(app.getHttpServer())
         .post(`/accounts/${account.uuid}/transactions`)
         .set('Authorization', `Bearer ${accessToken}`)
+        .set('Idempotency-Key', crypto.randomUUID())
         .send(transactionWithdrawalPayload),
 
       request(app.getHttpServer())
         .post(`/accounts/${account.uuid}/transactions`)
         .set('Authorization', `Bearer ${accessToken}`)
+        .set('Idempotency-Key', crypto.randomUUID())
         .send(transactionWithdrawalPayload)
     ]);
 

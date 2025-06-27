@@ -7,6 +7,7 @@ import { CreateTransactionHandler, CreateTransactionRequest, TransactionResponse
 import { ListTransactionHandler, ListTransactionResponse } from './handlers/list.transaction.handler';
 import { GetTransactionHandler } from './handlers/get.transaction.handler';
 import { UserEntity } from '../users/user.entity';
+import { applyIdempotencyHeader, GetIdempotencyKey } from '../common/idempotent.request';
 
 @ApiDefaultResponses()
 @GuardedApiEndpoints() // Allows for use of @CurrentUser
@@ -20,6 +21,7 @@ export class TransactionsController {
 
 
   @Post()
+  @applyIdempotencyHeader()
   @ApiOperation({ summary: 'Create a new transaction for an authenticated user against an account' })
   @ApiBadRequestResponse({ description: 'Invalid details supplied', type: BadRequestErrorResponse })
   @ApiUnprocessableEntityResponse({ description: 'Insufficient funds to process transaction', type: UnprocessableEntityErrorResponse })
@@ -27,10 +29,12 @@ export class TransactionsController {
   @ApiCreatedResponse({ description: 'List of accounts', type: TransactionResponse })
   async createTransaction(
     @CurrentUser() user: UserEntity,
+    @GetIdempotencyKey() idempotencyKey: string,
     @Param('accountId') accountId: string,
     @Body() body: CreateTransactionRequest
   ): Promise<TransactionResponse|null> {
     return this.createTransactionHandler.handle({
+      idempotencyKey,
       userId: user.uuid,
       accountId,
       data: body

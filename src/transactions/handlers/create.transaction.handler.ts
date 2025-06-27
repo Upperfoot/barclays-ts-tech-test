@@ -1,10 +1,12 @@
-import { BadRequestException, ForbiddenException, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEnum, IsInt, IsString } from "class-validator";
 import { AuthenticatedRequest, Currency } from '../../common/interfaces';
 import { TransactionEntity, TransactionStatus, TransactionType } from "../transaction.entity";
 import { TransactionHandler } from "./transaction.handler";
 import { ProcessTransactionHandler } from "./process.transaction.handler";
+import { IdempotentRequest } from "../../common/idempotent.request";
+import { log } from "console";
 
 export class CreateTransactionRequest {
     @ApiProperty({
@@ -35,7 +37,7 @@ export class CreateTransactionRequest {
     reference: string;
 }
 
-export type AuthenticatedCreateRequest = AuthenticatedRequest & { accountId: string, data: CreateTransactionRequest };
+export type AuthenticatedCreateRequest = AuthenticatedRequest & IdempotentRequest & { accountId: string, data: CreateTransactionRequest };
 
 export class TransactionResponse {
     @ApiProperty({
@@ -118,8 +120,21 @@ export class CreateTransactionHandler extends TransactionHandler {
         if (account.currency !== request.data.currency) {
             throw new BadRequestException(`Currency must be equal to Account Currency: ${account.currency}`)
         }
+        
+        const existingTransaction = await this.transactionRepo.findOne({
+            where: {
+                userId: request.userId,
+                accountId: request.accountId,
+                idempotencyKey: request.idempotencyKey
+            }
+        });
+
+        if(existingTransaction) {
+            return mapTransactionEntity(existingTransaction);
+        }
 
         const transaction = await this.transactionRepo.save({
+            idempotencyKey: request.idempotencyKey,
             userId: request.userId,
             accountId: account.uuid,
             amount: request.data.amount,
