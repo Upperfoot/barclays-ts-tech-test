@@ -44,17 +44,16 @@ Some specific choices I made to help simplify or clarify the build:
 - Opted for **NestJS** over raw Express to get structure, DI, and Swagger support quickly.
 - Used **TypeScript** for safety and expressiveness — it’s also what I’ve been working with most recently.
 - Could have set up **Docker + Compose** for local setup and portability, however I have kept this simple via my tech choices (e.g. SQLite)
+- Full e2e test coverage, focus on testing producer boundaries
 - JWT auth was handled via Passport strategy and guarded routes — roughly mirroring Spring Security flows.
 - I kept the code style close to idiomatic NestJS, using pipes, interceptors, and guards where appropriate.
-- As with any type of money handling, working with purely integers to prevent rounding errors and letting presentation layer handle the display format.
-- I will implement a simple Transactional Outbox system via a Command Line to split concerns of Transaction Intent from Transactional Outcome, this can be further iterated upon in future to be Event Driven through Message Queue's - this also prevents inline request transaction locking which is rarely a scaleable solution.
+- As with any type of money handling, working with purely integers to prevent rounding errors and letting presentation layer handle the display format - Could add information on Currency on display format
+- I was thinking of implementing a simple Transactional Outbox system to split concerns of Transaction Intent from Transactional Outcome and allow OOB processing, I've instead called our ProcessTransactionHandler inline - but have done tests to ensure transactional locks are in place for requests coming in at the same moment - this ProcessTransactionHandler can be moved out into a separate Queue System for OOB processing
 
 ---
 
 ## 🤔 Things I Skipped (On Purpose)
 
-- Full e2e test coverage (out of scope, but could be added easily with `@nestjs/testing`)
-- Advanced DB constraints and rollback logic for transactions — just out of scope for now
 - Internationalisation (i18n), currency conversion, or multi-user roles (could be future layers)
 - Event-Driven systems/Asynchronous patterns (e.g. CDC, 2PC, Event Sourcing)
 
